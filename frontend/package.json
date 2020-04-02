@@ -8,12 +8,15 @@
     "lodash": "^4.17.15",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-draggable": "^4.2.0",
+    "react-dropzone": "^10.2.2",
     "react-leaflet": "^2.6.1",
     "react-leaflet-dialog": "^2.0.1",
     "react-leaflet-geojson-patterns": "^1.1.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "xlsx": "^0.15.6"
   },
   "scripts": {
     "start": "react-scripts start",
