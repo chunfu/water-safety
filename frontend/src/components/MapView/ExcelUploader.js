@@ -3,12 +3,26 @@ import * as xlsx from 'xlsx';
 import { useDropzone } from 'react-dropzone';
 import styled from 'styled-components';
 
-const getColor = (props) => {
+const excel2json = (data) => {
+  const workbook = xlsx.read(data, { type: 'buffer' });
+  const sheets = workbook.SheetNames;
+  const sheetsData = sheets.reduce((acc, sheet) => {
+    const ws = workbook.Sheets[sheet];
+    return {
+      ...acc,
+      [sheet]: xlsx.utils.sheet_to_json(ws, { raw: false }),
+    };
+  }, {});
+
+  return sheetsData;
+}
+
+const getColor = props => {
   if (props.isDragActive) {
-      return '#cfcfcf';
+    return '#cfcfcf';
   }
   return '#eeeeee';
-}
+};
 
 const Container = styled.div`
   flex: 1;
@@ -23,8 +37,8 @@ const Container = styled.div`
   border-style: dashed;
   color: ${props => getColor(props)};
   outline: none;
-  transition: border .24s ease-in-out;
-  transition: color .24s ease-in-out;
+  transition: border 0.24s ease-in-out;
+  transition: color 0.24s ease-in-out;
   cursor: pointer;
 `;
 
@@ -48,36 +62,20 @@ const ExcelUploader = ({ onDropFile }) => {
     },
     [onDropFile],
   );
-const {
+  const {
     getRootProps,
     getInputProps,
     isDragActive,
     isDragAccept,
-    isDragReject
+    isDragReject,
   } = useDropzone({ onDrop, accept: '.xlsx' });
 
   return (
-    <div>
-      <Container {...getRootProps({isDragActive, isDragAccept, isDragReject})}>
-        <input {...getInputProps()} />
-        <h3>拖拉上傳歷年資料</h3>
-      </Container>
-    </div>
+    <Container {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
+      <input {...getInputProps()} />
+      <h3>拖拉上傳歷年資料</h3>
+    </Container>
   );
 };
-
-function excel2json(data) {
-  const workbook = xlsx.read(data, { type: 'buffer' });
-  const sheets = workbook.SheetNames;
-  const sheetsData = sheets.reduce((acc, sheet) => {
-    const ws = workbook.Sheets[sheet];
-    return {
-      ...acc,
-      [sheet]: xlsx.utils.sheet_to_json(ws, { raw: false }),
-    };
-  }, {});
-
-  return sheetsData;
-}
 
 export default ExcelUploader;

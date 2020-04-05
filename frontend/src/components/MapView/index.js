@@ -23,15 +23,6 @@ const SelectListContainer = styled.div`
   z-index: 1001;
 `;
 
-const TabViewContainer = styled.div`
-  position: absolute;
-  left: 5vw;
-  top: 10vh;
-  width: 30vw;
-  z-index: 1001;
-  cursor: move;
-`;
-
 const countySelectOptions = [{ value: '', label: '選擇縣市' }].concat(
   countyKeys.map(key => ({
     value: key,
@@ -162,9 +153,7 @@ const MapView = props => {
       </SelectListContainer>
       {selectedCounty && (
         <Draggable>
-          <TabViewContainer>
-            <TabView config={countyConfig[selectedCounty]} />
-          </TabViewContainer>
+          <TabView config={countyConfig[selectedCounty]} />
         </Draggable>
       )}
       <Map {...mapProps}>

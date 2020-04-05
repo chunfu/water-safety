@@ -2,9 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { SegmentedControl } from 'gestalt';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
+import { Heading } from 'gestalt';
 
-const TabViewStyle = styled.div`
+const TabViewContainer = styled.div`
+  position: absolute;
+  left: 5vw;
+  top: 15vh;
+  width: 30vw;
+  z-index: 1001;
+  cursor: move;
   background: white;
+  border-radius: 8px;
 `;
 
 const ContentStyle = styled.div`
@@ -20,7 +28,9 @@ const eventAm = '發生時段(上/下午)';
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  &, th, td {
+  &,
+  th,
+  td {
     border: 1px solid black;
   }
   td {
@@ -29,7 +39,7 @@ const Table = styled.table`
 `;
 
 const YearlyAccidentsTable = ({ data }) => {
-  if (isEmpty(data)) return <h1>無資料顯示</h1>
+  if (isEmpty(data)) return <h1>無資料顯示</h1>;
 
   const years = Object.keys(data);
   return years.map(y => {
@@ -58,30 +68,32 @@ const YearlyAccidentsTable = ({ data }) => {
 
 const TabView = props => {
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
-  const {
-    config: { yearlyAccidents = {} },
-  } = props;
+  const { config } = props;
+  const { yearlyAccidents = {} } = config;
 
   const items = [
-    { name: '發生學生溺水死亡意外之水域', content: <YearlyAccidentsTable data={yearlyAccidents} /> },
+    {
+      name: '發生學生溺水死亡意外之水域',
+      content: <YearlyAccidentsTable data={yearlyAccidents} />,
+    },
     { name: '重覆發生學生溺水死亡意外之水域', content: <h1>暫無資料</h1> },
   ];
   const names = items.map(i => i.name);
 
-
   const handleOnChange = ({ activeIndex }) => setSelectedItemIndex(activeIndex);
 
   return (
-    <TabViewStyle>
+    <TabViewContainer>
+      <Heading color="gray" size="md" align="center">
+        {config.name[0]}
+      </Heading>
       <SegmentedControl
         selectedItemIndex={selectedItemIndex}
         onChange={handleOnChange}
         items={names}
       />
-      <ContentStyle>
-        {items[selectedItemIndex].content}
-      </ContentStyle>
-    </TabViewStyle>
+      <ContentStyle>{items[selectedItemIndex].content}</ContentStyle>
+    </TabViewContainer>
   );
 };
 
