@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Map,
   TileLayer,
@@ -13,62 +13,12 @@ import styled from 'styled-components';
 import Draggable from 'react-draggable';
 import TabView from './TabView';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
-import * as xlsx from 'xlsx';
-import { useDropzone } from 'react-dropzone';
-
-const ExcelUploader = ({ onDropFile }) => {
-  const onDrop = useCallback(
-    acceptedFiles => {
-      // Do something with the files
-      acceptedFiles.forEach(file => {
-        const reader = new FileReader();
-
-        reader.onabort = () => console.log('file reading was aborted');
-        reader.onerror = () => console.log('file reading has failed');
-        reader.onload = () => {
-          // Do whatever you want with the file contents
-          const binaryStr = reader.result;
-          const sheetsData = excel2json(binaryStr);
-          onDropFile(sheetsData);
-        };
-        reader.readAsArrayBuffer(file);
-      });
-    },
-    [onDropFile],
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-  return (
-    <div {...getRootProps()}>
-      <input {...getInputProps()} />
-      {isDragActive ? (
-        <p>Drop the files here ...</p>
-      ) : (
-        <p>Drag 'n' drop some files here, or click to select files</p>
-      )}
-    </div>
-  );
-};
-
-function excel2json(data) {
-  const workbook = xlsx.read(data, { type: 'buffer' });
-  const sheets = workbook.SheetNames;
-  const sheetsData = sheets.reduce((acc, sheet) => {
-    const ws = workbook.Sheets[sheet];
-    return {
-      ...acc,
-      [sheet]: xlsx.utils.sheet_to_json(ws, { raw: false }),
-    };
-  }, {});
-
-  return sheetsData;
-}
+import ExcelUploader from './ExcelUploader';
 
 const SelectListContainer = styled.div`
   position: absolute;
   right: 5vw;
-  top: 10vh;
+  top: 15vh;
   width: 200px;
   z-index: 1001;
 `;
