@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Map,
-  TileLayer,
-  Marker,
-  Popup,
-  GeoJSON,
-  withLeaflet,
-} from 'react-leaflet';
+import { Map, TileLayer, Popup } from 'react-leaflet';
 import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
 import { SelectList } from 'gestalt';
 import styled from 'styled-components';
 import Draggable from 'react-draggable';
 import TabView from './TabView';
+import RiverTabView from './RiverTabView';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
+import { defaultRiverConfig, riverKeys } from './riverConfig';
 import ExcelUploader from './ExcelUploader';
+import CustomizedMarker from './CustomizedMarker';
 
 const SelectListContainer = styled.div`
   position: absolute;
@@ -50,18 +46,7 @@ const mapProps = {
 const MapView = props => {
   const [countyConfig, updateCountyConfig] = useState(defaultCountyConfig);
   const [selectedCounty, setSelectedCounty] = useState('');
-
-  const onEachFeature = (feature, layer) => {
-    /*
-    const countyName = feature.properties.COUNTY;
-    const popupContent = `
-    <Popup>
-      ${countyName}
-    </Popup>
-    `;
-    layer.bindPopup(popupContent);
-    */
-  };
+  const [selectedRiver, setSelectedRiver] = useState('');
 
   useEffect(() => {
     const newCountyConfig = countyKeys.reduce((acc, key) => {
@@ -156,6 +141,11 @@ const MapView = props => {
           <TabView config={countyConfig[selectedCounty]} />
         </Draggable>
       )}
+      {/* {selectedRiver && (
+        <Draggable>
+          <RiverTabView config={defaultRiverConfig[selectedRiver]} />
+        </Draggable>
+      )} */}
       <Map {...mapProps}>
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -167,11 +157,21 @@ const MapView = props => {
             <GeoJSONFillable
               data={geojson}
               style={feature => style}
-              onEachFeature={onEachFeature}
               onClick={() => {
                 onSelectCounty(key);
               }}
             />
+          );
+        })}
+        {riverKeys.map(key => {
+          const { location } = defaultRiverConfig[key];
+          return (
+            <CustomizedMarker
+              position={location}
+              onClick={() => setSelectedRiver(key)}
+            >
+              <Popup>{key}</Popup>
+            </CustomizedMarker>
           );
         })}
       </Map>
