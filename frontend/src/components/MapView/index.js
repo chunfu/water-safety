@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { Map, TileLayer, Popup } from 'react-leaflet';
 import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
 import { SelectList } from 'gestalt';
@@ -141,11 +141,11 @@ const MapView = props => {
           <TabView config={countyConfig[selectedCounty]} />
         </Draggable>
       )}
-      {/* {selectedRiver && (
+      {selectedRiver && (
         <Draggable>
           <RiverTabView config={defaultRiverConfig[selectedRiver]} />
         </Draggable>
-      )} */}
+      )}
       <Map {...mapProps}>
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

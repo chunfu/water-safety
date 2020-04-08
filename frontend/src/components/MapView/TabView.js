@@ -9,7 +9,7 @@ const TabViewContainer = styled.div`
   left: 5vw;
   top: 15vh;
   width: 30vw;
-  z-index: 1001;
+  z-index: ${props => props.displayOrder || 1001};
   cursor: move;
   background: white;
   border-radius: 8px;
@@ -83,7 +83,7 @@ const TabView = props => {
   const handleOnChange = ({ activeIndex }) => setSelectedItemIndex(activeIndex);
 
   return (
-    <TabViewContainer>
+    <TabViewContainer {...props} >
       <Heading color="gray" size="md" align="center">
         {config.name[0]}
       </Heading>
