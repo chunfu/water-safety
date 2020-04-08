@@ -20,7 +20,7 @@ const SelectListContainer = styled.div`
 `;
 
 const countySelectOptions = [{ value: '', label: '選擇縣市' }].concat(
-  countyKeys.map(key => ({
+  countyKeys.map((key) => ({
     value: key,
     label: defaultCountyConfig[key].name[0],
   })),
@@ -43,12 +43,41 @@ const mapProps = {
   zoom: 8,
 };
 
-const MapView = props => {
-  const [countyConfig, updateCountyConfig] = useState(defaultCountyConfig);
-  const [selectedCounty, setSelectedCounty] = useState('');
-  const [selectedRiver, setSelectedRiver] = useState('');
+const TYPE_SELECT_COUTY = 'selectCounty';
+const TYPE_SELECT_RIVER = 'selectRiver';
+const initState = {
+  selectedCounty: '',
+  selectedRiver: '',
+};
+const reducer = (state, action) => {
+  const { type, value, cb = () => {} } = action;
+  switch (type) {
+    case TYPE_SELECT_COUTY:
+      cb(value);
+      return {
+        ...state,
+        selectedCounty: value,
+        selectedRiver: '',
+      };
+    case TYPE_SELECT_RIVER:
+      cb(value);
+      return {
+        ...state,
+        selectedCounty: '',
+        selectedRiver: value,
+      };
+    default:
+      return state;
+  }
+};
 
-  useEffect(() => {
+const MapView = (props) => {
+  const [countyConfig, updateCountyConfig] = useState(defaultCountyConfig);
+  const [state, dispatch] = useReducer(reducer, initState);
+  console.log(state);
+  const { selectedRiver, selectedCounty } = state;
+
+  const resetContyStyle = (selectedCounty) => {
     const newCountyConfig = countyKeys.reduce((acc, key) => {
       const config = countyConfig[key];
       // reset others' style
@@ -62,28 +91,40 @@ const MapView = props => {
       };
     }, {});
     updateCountyConfig(newCountyConfig);
-  }, [selectedCounty]);
-
-  const onSelectCounty = countyKey => {
-    setSelectedCounty(countyKey);
   };
 
-  const onDropFile = sheetsData => {
+  const onSelectCounty = (countyKey) => {
+    dispatch({
+      type: TYPE_SELECT_COUTY,
+      value: countyKey,
+      cb: resetContyStyle,
+    });
+  };
+
+  const onSelectRiver = (riverKey) => {
+    dispatch({
+      type: TYPE_SELECT_RIVER,
+      value: riverKey,
+      cb: resetContyStyle,
+    });
+  }
+
+  const onDropFile = (sheetsData) => {
     const eventCounty = '發生所在縣市';
     const eventLocation = '發生地點名稱';
     const eventMonth = '發生月份';
     const eventAm = '發生時段(上/下午)';
 
     let newCountyConfig = { ...countyConfig };
-    Object.keys(sheetsData).forEach(sheetName => {
+    Object.keys(sheetsData).forEach((sheetName) => {
       // iterate data from each sheet
       const dataArr = sheetsData[sheetName];
-      dataArr.forEach(d => {
+      dataArr.forEach((d) => {
         // iterate each record from data
 
         // find the corresponding county config
         const county = countyKeys.find(
-          countyKey =>
+          (countyKey) =>
             newCountyConfig[countyKey].name.indexOf(d[eventCounty]) > -1,
         );
 
@@ -151,26 +192,25 @@ const MapView = props => {
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {countyKeys.map(key => {
+        {countyKeys.map((key) => {
           const { geojson, style = geoJsonStyle } = countyConfig[key];
           return (
             <GeoJSONFillable
               data={geojson}
-              style={feature => style}
+              style={(feature) => style}
               onClick={() => {
                 onSelectCounty(key);
               }}
             />
           );
         })}
-        {riverKeys.map(key => {
+        {riverKeys.map((key) => {
           const { location } = defaultRiverConfig[key];
           return (
             <CustomizedMarker
               position={location}
-              onClick={() => setSelectedRiver(key)}
+              onClick={() => onSelectRiver(key)}
             >
-              <Popup>{key}</Popup>
             </CustomizedMarker>
           );
         })}
