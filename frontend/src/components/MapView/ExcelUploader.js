@@ -25,12 +25,14 @@ const getColor = props => {
 };
 
 const Container = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 5px;
-  padding: 20px;
+  position: absolute;
+  z-index: 1000;
+  right: 5vw;
+  bottom: 5vh;
+  background: #cfcfcf;
+  padding: 10px;
+  width: 200px;
+  text-align: center;
   border-width: 2px;
   border-radius: 2px;
   border-color: ${props => getColor(props)};
