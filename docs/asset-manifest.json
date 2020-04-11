@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/static/css/main.3239d586.chunk.css",
-    "main.js": "/static/js/main.a51b5608.chunk.js",
-    "main.js.map": "/static/js/main.a51b5608.chunk.js.map",
-    "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
-    "runtime~main.js.map": "/static/js/runtime~main.a8a9905a.js.map",
-    "static/css/2.989f7ac2.chunk.css": "/static/css/2.989f7ac2.chunk.css",
-    "static/js/2.35d52f36.chunk.js": "/static/js/2.35d52f36.chunk.js",
-    "static/js/2.35d52f36.chunk.js.map": "/static/js/2.35d52f36.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.dc835234c81a717503d6ecb5da4d8807.js": "/precache-manifest.dc835234c81a717503d6ecb5da4d8807.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/2.989f7ac2.chunk.css.map": "/static/css/2.989f7ac2.chunk.css.map",
-    "static/css/main.3239d586.chunk.css.map": "/static/css/main.3239d586.chunk.css.map"
+    "main.css": "/water-safety/static/css/main.3239d586.chunk.css",
+    "main.js": "/water-safety/static/js/main.898e5662.chunk.js",
+    "main.js.map": "/water-safety/static/js/main.898e5662.chunk.js.map",
+    "runtime~main.js": "/water-safety/static/js/runtime~main.53cf4791.js",
+    "runtime~main.js.map": "/water-safety/static/js/runtime~main.53cf4791.js.map",
+    "static/css/2.989f7ac2.chunk.css": "/water-safety/static/css/2.989f7ac2.chunk.css",
+    "static/js/2.22e80158.chunk.js": "/water-safety/static/js/2.22e80158.chunk.js",
+    "static/js/2.22e80158.chunk.js.map": "/water-safety/static/js/2.22e80158.chunk.js.map",
+    "index.html": "/water-safety/index.html",
+    "precache-manifest.0042b2dddc587163359272b329c34918.js": "/water-safety/precache-manifest.0042b2dddc587163359272b329c34918.js",
+    "service-worker.js": "/water-safety/service-worker.js",
+    "static/css/2.989f7ac2.chunk.css.map": "/water-safety/static/css/2.989f7ac2.chunk.css.map",
+    "static/css/main.3239d586.chunk.css.map": "/water-safety/static/css/main.3239d586.chunk.css.map"
   }
 }
