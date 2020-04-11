@@ -1,5 +1,5 @@
 {
-  "name": "nec-backend",
+  "name": "water-safety",
   "version": "0.0.8",
   "description": "Starter project for an ES6 RESTful Express API",
   "main": "dist",
@@ -8,6 +8,7 @@
     "page": "cd frontend && npm start",
     "build": "rm -rf dist/ && babel src -s -D -d dist --presets es2015,stage-0",
     "postbuild": "cp package.json dist/ && cp -r modules docs dist/ && cd frontend && npm run build && mv build/ ../dist/",
+    "build:page": "cd frontend && npm run build && cp -r build/* ../docs/",
     "postinstall": "cd frontend && npm install",
     "start": "node dist",
     "prestart": "npm run -s build",
