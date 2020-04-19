@@ -10,7 +10,13 @@ import RiverTabView from '../RiverTabView';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
 import { defaultRiverConfig, riverKeys } from './riverConfig';
 import CustomizedMarker from './CustomizedMarker';
-import { eventCounty, eventAm, eventLocation, eventMonth } from '../../const';
+import {
+  eventCounty,
+  eventAm,
+  eventLocation,
+  eventYear,
+  eventMonth,
+} from '../../const';
 
 const SelectListContainer = styled.div`
   position: absolute;
@@ -77,7 +83,6 @@ const reducer = (state, action) => {
 const MapView = (props) => {
   const [countyConfig, updateCountyConfig] = useState(defaultCountyConfig);
   const [state, dispatch] = useReducer(reducer, initState);
-  console.log(state);
   const { selectedRiver, selectedCounty } = state;
 
   const onSelectCountyCb = (selectedCounty) => {
@@ -114,6 +119,16 @@ const MapView = (props) => {
     });
   };
 
+  const makeAccidentData = ({ sheetName, record }) => {
+    const obj = {
+      [eventLocation]: record[eventLocation],
+      [eventYear]: sheetName,
+      [eventMonth]: record[eventMonth],
+      [eventAm]: record[eventAm],
+    };
+    return obj;
+  };
+
   const onDropFile = (sheetsData) => {
     let newCountyConfig = { ...countyConfig };
     Object.keys(sheetsData).forEach((sheetName) => {
@@ -137,20 +152,16 @@ const MapView = (props) => {
         let config = newCountyConfig[county];
 
         // insert current record into county config
-        let { yearlyAccidents = {} } = config;
-        let accidents = yearlyAccidents[sheetName] || [];
-        accidents.push({
-          [eventLocation]: d[eventLocation],
-          [eventMonth]: d[eventMonth],
-          [eventAm]: d[eventAm],
-        });
+        let { accidentData = [] } = config;
 
         config = {
           ...config,
-          yearlyAccidents: {
-            ...yearlyAccidents,
-            [sheetName]: accidents,
-          },
+          accidentData: accidentData.concat(
+            makeAccidentData({
+              sheetName,
+              record: d,
+            }),
+          ),
         };
 
         newCountyConfig = {
@@ -189,9 +200,13 @@ const MapView = (props) => {
       )}
       <Map {...mapProps}>
         <TileLayer
+          url="http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &amp; USGS'
+        />
+        {/* <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        /> */}
         {countyKeys.map((key) => {
           const { geojson, style = geoJsonStyle } = countyConfig[key];
           return (
