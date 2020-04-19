@@ -3,6 +3,7 @@ import { SegmentedControl } from 'gestalt';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 import { Heading } from 'gestalt';
+import { eventAm, eventLocation, eventMonth } from '../../const';
 
 const TabViewContainer = styled.div`
   position: absolute;
@@ -20,10 +21,6 @@ const ContentStyle = styled.div`
   overflow: auto;
   height: 60vh;
 `;
-
-const eventLocation = '發生地點名稱';
-const eventMonth = '發生月份';
-const eventAm = '發生時段(上/下午)';
 
 const Table = styled.table`
   width: 100%;
@@ -66,7 +63,7 @@ const YearlyAccidentsTable = ({ data }) => {
   });
 };
 
-const TabView = props => {
+const CountyTabView = props => {
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const { config } = props;
   const { yearlyAccidents = {} } = config;
@@ -97,4 +94,4 @@ const TabView = props => {
   );
 };
 
-export default TabView;
+export default CountyTabView;

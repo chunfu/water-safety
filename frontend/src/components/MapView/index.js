@@ -4,12 +4,13 @@ import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
 import { SelectList } from 'gestalt';
 import styled from 'styled-components';
 import Draggable from 'react-draggable';
-import TabView from './TabView';
-import RiverTabView from './RiverTabView';
+import ExcelUploader from '../ExcelUploader';
+import CountyTabView from '../CountyTabView';
+import RiverTabView from '../RiverTabView';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
 import { defaultRiverConfig, riverKeys } from './riverConfig';
-import ExcelUploader from './ExcelUploader';
 import CustomizedMarker from './CustomizedMarker';
+import { eventCounty, eventAm, eventLocation, eventMonth } from '../../const';
 
 const SelectListContainer = styled.div`
   position: absolute;
@@ -49,6 +50,8 @@ const initState = {
   selectedCounty: '',
   selectedRiver: '',
 };
+
+// TODO: should be calling cleanup cb automatically
 const reducer = (state, action) => {
   const { type, value, cb = () => {} } = action;
   switch (type) {
@@ -77,7 +80,7 @@ const MapView = (props) => {
   console.log(state);
   const { selectedRiver, selectedCounty } = state;
 
-  const resetContyStyle = (selectedCounty) => {
+  const onSelectCountyCb = (selectedCounty) => {
     const newCountyConfig = countyKeys.reduce((acc, key) => {
       const config = countyConfig[key];
       // reset others' style
@@ -93,11 +96,13 @@ const MapView = (props) => {
     updateCountyConfig(newCountyConfig);
   };
 
+  const onSelectRiverCb = () => onSelectCountyCb('');
+
   const onSelectCounty = (countyKey) => {
     dispatch({
       type: TYPE_SELECT_COUTY,
       value: countyKey,
-      cb: resetContyStyle,
+      cb: onSelectCountyCb,
     });
   };
 
@@ -105,16 +110,11 @@ const MapView = (props) => {
     dispatch({
       type: TYPE_SELECT_RIVER,
       value: riverKey,
-      cb: resetContyStyle,
+      cb: onSelectRiverCb,
     });
-  }
+  };
 
   const onDropFile = (sheetsData) => {
-    const eventCounty = '發生所在縣市';
-    const eventLocation = '發生地點名稱';
-    const eventMonth = '發生月份';
-    const eventAm = '發生時段(上/下午)';
-
     let newCountyConfig = { ...countyConfig };
     Object.keys(sheetsData).forEach((sheetName) => {
       // iterate data from each sheet
@@ -179,7 +179,7 @@ const MapView = (props) => {
       </SelectListContainer>
       {selectedCounty && (
         <Draggable>
-          <TabView config={countyConfig[selectedCounty]} />
+          <CountyTabView config={countyConfig[selectedCounty]} />
         </Draggable>
       )}
       {selectedRiver && (
@@ -210,8 +210,7 @@ const MapView = (props) => {
             <CustomizedMarker
               position={location}
               onClick={() => onSelectRiver(key)}
-            >
-            </CustomizedMarker>
+            ></CustomizedMarker>
           );
         })}
       </Map>
