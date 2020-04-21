@@ -43,7 +43,7 @@ const YearlyAccidentsTable = ({ data }) => {
   if (isEmpty(data)) return <h1>無資料顯示</h1>;
 
   const years = Object.keys(data);
-  return years.map((y) => {
+  return years.sort((a, b) => b -a ).map((y) => {
     const accidents = data[y];
     return (
       <div>
@@ -81,7 +81,7 @@ const DangerRiverTable = ({ data }) => {
       </tr>
       {rivers.map((r) => {
         const accidents = data[r];
-        return accidents.map((accident, i) => {
+        return accidents.sort((a, b) => b[eventYear] - a[eventYear]).map((accident, i) => {
           return (
             <tr>
               {i === 0 && <td rowspan={accidents.length}>{r}</td>}
