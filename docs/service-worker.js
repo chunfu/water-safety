@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/water-safety/precache-manifest.6a6b8258404fd5a68cf5a0250e1ded1f.js"
+  "/water-safety/precache-manifest.33bf8fea23f325aad6bb7d233716eb12.js"
 );
 
 self.addEventListener('message', (event) => {
