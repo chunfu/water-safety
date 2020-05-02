@@ -40,6 +40,5 @@
   },
   "devDependencies": {
     "http-proxy-middleware": "^0.20.0"
-  },
-  "homepage" : "https://chunfu.github.io/water-safety"
+  }
 }
