@@ -45,9 +45,17 @@ const geoJsonFocusStyle = {
   fillColor: '#FDC500',
 };
 
+const maxBounds = [
+  [21, 119],
+  [27, 123],
+];
+
 const mapProps = {
   center: [23.973837, 120.9775031],
   zoom: 8,
+  maxBounds,
+  minZoom: 7,
+  maxZoom: 9,
 };
 
 const TYPE_SELECT_COUTY = 'selectCounty';

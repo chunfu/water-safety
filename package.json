@@ -11,7 +11,6 @@
     "build:page": "cd frontend && npm run build && cp -r build/* ../docs/ && mv build/ ../dist/",
     "postinstall": "cd frontend && npm install",
     "start": "node dist",
-    "prestart": "npm run -s build",
     "test": "eslint src"
   },
   "eslintConfig": {
@@ -36,7 +35,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
-    "@google/maps": "^0.5.5",
+    "@googlemaps/google-maps-services-js": "^2.6.0",
     "body-parser": "^1.13.3",
     "compression": "^1.5.2",
     "connect-history-api-fallback": "^1.6.0",
