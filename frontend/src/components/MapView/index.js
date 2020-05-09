@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { Map, TileLayer, Popup } from 'react-leaflet';
+import Leaflet from 'leaflet'
 import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
 import { SelectList } from 'gestalt';
 import styled from 'styled-components';
@@ -46,16 +47,17 @@ const geoJsonFocusStyle = {
 };
 
 const maxBounds = [
-  [21, 119],
+  [21, 117],
   [27, 123],
 ];
 
-const mapProps = {
+const DEFAULT_ZOOM_LEVEL = 8;
+const MAP_INIT_PROPS = {
   center: [23.973837, 120.9775031],
-  zoom: 8,
   maxBounds,
-  minZoom: 7,
-  maxZoom: 9,
+  zoom: DEFAULT_ZOOM_LEVEL,
+  minZoom: DEFAULT_ZOOM_LEVEL,
+  maxZoom: DEFAULT_ZOOM_LEVEL + 2,
 };
 
 const TYPE_SELECT_COUTY = 'selectCounty';
@@ -68,16 +70,15 @@ const initState = {
 // TODO: should be calling cleanup cb automatically
 const reducer = (state, action) => {
   const { type, value, cb = () => {} } = action;
+  cb(value);
   switch (type) {
     case TYPE_SELECT_COUTY:
-      cb(value);
       return {
         ...state,
         selectedCounty: value,
         selectedRiver: '',
       };
     case TYPE_SELECT_RIVER:
-      cb(value);
       return {
         ...state,
         selectedCounty: '',
@@ -89,11 +90,12 @@ const reducer = (state, action) => {
 };
 
 const MapView = (props) => {
+  const [mapProps, updateMapProps] = useState(MAP_INIT_PROPS);
   const [countyConfig, updateCountyConfig] = useState(defaultCountyConfig);
   const [state, dispatch] = useReducer(reducer, initState);
   const { selectedRiver, selectedCounty } = state;
 
-  const onSelectCountyCb = (selectedCounty) => {
+  useEffect(() => {
     const newCountyConfig = countyKeys.reduce((acc, key) => {
       const config = countyConfig[key];
       // reset others' style
@@ -107,15 +109,24 @@ const MapView = (props) => {
       };
     }, {});
     updateCountyConfig(newCountyConfig);
-  };
+  }, [selectedCounty]);
 
-  const onSelectRiverCb = () => onSelectCountyCb('');
+  // make center of map exactly the same as selected county
+  const onSelectCountySideEffect = (countyKey) => {
+    const { geojson } = countyConfig[countyKey];
+    const gj = Leaflet.geoJSON(geojson);
+    updateMapProps({
+      ...mapProps,
+      center: gj.getBounds().getCenter(),
+      zoom: 10,
+    })
+  };
 
   const onSelectCounty = (countyKey) => {
     dispatch({
       type: TYPE_SELECT_COUTY,
       value: countyKey,
-      cb: onSelectCountyCb,
+      cb: onSelectCountySideEffect,
     });
   };
 
@@ -123,7 +134,6 @@ const MapView = (props) => {
     dispatch({
       type: TYPE_SELECT_RIVER,
       value: riverKey,
-      cb: onSelectRiverCb,
     });
   };
 
@@ -179,7 +189,7 @@ const MapView = (props) => {
       });
     });
 
-    // update insert new event into that config
+    // update new event into that config
     updateCountyConfig(newCountyConfig);
   };
 
