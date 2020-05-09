@@ -3,8 +3,14 @@ import { SegmentedControl } from 'gestalt';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 import { Heading } from 'gestalt';
-import { eventAm, eventLocation, eventYear, eventMonth } from '../../const';
-import { groupBy } from 'lodash';
+import {
+  eventAm,
+  eventLocation,
+  eventYear,
+  eventMonth,
+  eventTime,
+} from '../../const';
+import { groupBy, uniqBy } from 'lodash';
 
 const TabViewContainer = styled.div`
   position: absolute;
@@ -39,32 +45,53 @@ const Table = styled.table`
   }
 `;
 
+const ForbiddenRiverTable = ({ data }) => {
+  return (
+    <div>
+      <Table>
+        <tr>
+          <th>水域名稱</th>
+          <th>禁止範圍</th>
+        </tr>
+        <tr>
+          <td>南勢溪</td>
+          <td>
+            南勢溪水域下龜山橋、萬年 橋至桂山電廠附近水域禁止 從事水域遊憩活動。
+          </td>
+        </tr>
+      </Table>
+    </div>
+  );
+};
+
 const YearlyAccidentsTable = ({ data }) => {
   if (isEmpty(data)) return <h1>無資料顯示</h1>;
 
   const years = Object.keys(data);
-  return years.sort((a, b) => b -a ).map((y) => {
-    const accidents = data[y];
-    return (
-      <div>
-        <h2>{y}</h2>
-        <Table>
-          <tr>
-            <th>地區</th>
-            <th>發生時間</th>
-            <th>發生時段</th>
-          </tr>
-          {accidents.map((accident) => (
+  return years
+    .sort((a, b) => b - a)
+    .map((y) => {
+      const accidents = data[y];
+      return (
+        <div>
+          <h2>{y}</h2>
+          <Table>
             <tr>
-              <td>{accident[eventLocation]}</td>
-              <td>{accident[eventMonth]}</td>
-              <td>{accident[eventAm]}</td>
+              <th>地區</th>
+              <th>發生時間</th>
+              <th>發生時段</th>
             </tr>
-          ))}
-        </Table>
-      </div>
-    );
-  });
+            {accidents.map((accident) => (
+              <tr>
+                <td>{accident[eventLocation]}</td>
+                <td>{accident[eventMonth]}</td>
+                <td>{accident[eventAm]}</td>
+              </tr>
+            ))}
+          </Table>
+        </div>
+      );
+    });
 };
 
 const DangerRiverTable = ({ data }) => {
@@ -79,19 +106,23 @@ const DangerRiverTable = ({ data }) => {
         <th>月份</th>
         <th>時段</th>
       </tr>
-      {rivers.map((r) => {
-        const accidents = data[r];
-        return accidents.sort((a, b) => b[eventYear] - a[eventYear]).map((accident, i) => {
-          return (
-            <tr>
-              {i === 0 && <td rowspan={accidents.length}>{r}</td>}
-              <td>{accident[eventYear]}</td>
-              <td>{accident[eventMonth]}</td>
-              <td>{accident[eventAm]}</td>
-            </tr>
-          );
-        });
-      })}
+      {rivers
+        .sort((a, b) => data[b].length - data[a].length)
+        .map((r) => {
+          const accidents = data[r];
+          return accidents
+            .sort((a, b) => b[eventYear] - a[eventYear])
+            .map((accident, i) => {
+              return (
+                <tr>
+                  {i === 0 && <td rowspan={accidents.length}>{r}</td>}
+                  <td>{accident[eventYear]}</td>
+                  <td>{accident[eventMonth]}</td>
+                  <td>{accident[eventAm]}</td>
+                </tr>
+              );
+            });
+        })}
     </Table>
   );
 };
@@ -100,18 +131,26 @@ const CountyTabView = (props) => {
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const { config } = props;
   const { accidentData = [] } = config;
-  const yearlyAccidents = groupBy(accidentData, eventYear);
-  const dangerRivers = groupBy(accidentData, eventLocation);
+  const uniqAccidentData = uniqBy(
+    accidentData,
+    (d) => `${d[eventYear]}${d[eventMonth]}${d[eventAm]}${d[eventTime]}`,
+  );
+  const yearlyAccidents = groupBy(uniqAccidentData, eventYear);
+  const dangerRivers = groupBy(uniqAccidentData, eventLocation);
 
   const items = useMemo(
     () => [
       {
-        name: '發生學生溺水死亡意外之水域',
-        content: <YearlyAccidentsTable data={yearlyAccidents} />,
+        name: '禁止前往水域',
+        content: <ForbiddenRiverTable />,
       },
       {
         name: '重覆發生學生溺水死亡意外之水域',
         content: <DangerRiverTable data={dangerRivers} />,
+      },
+      {
+        name: '歷年發生學生溺水死亡意外之水域',
+        content: <YearlyAccidentsTable data={yearlyAccidents} />,
       },
     ],
     [yearlyAccidents, dangerRivers],

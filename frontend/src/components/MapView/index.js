@@ -14,6 +14,7 @@ import CustomizedMarker from './CustomizedMarker';
 import {
   eventCounty,
   eventAm,
+  eventTime,
   eventLocation,
   eventYear,
   eventMonth,
@@ -143,6 +144,7 @@ const MapView = (props) => {
       [eventYear]: sheetName,
       [eventMonth]: record[eventMonth],
       [eventAm]: record[eventAm],
+      [eventTime]: record[eventTime],
     };
     return obj;
   };
