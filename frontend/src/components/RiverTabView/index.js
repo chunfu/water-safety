@@ -34,6 +34,7 @@ const Table = styled.table`
   }
 `;
 
+// data: { 2005: 1, 2006:2 ...}
 const YearlyDeathTable = ({ data }) => {
   if (isEmpty(data)) return <h1>無資料顯示</h1>;
 
@@ -45,11 +46,11 @@ const YearlyDeathTable = ({ data }) => {
           <th>全國</th>
           <th>學生</th>
         </tr>
-        {data.map((d) => (
+        {Object.keys(data).map((year) => (
           <tr>
-            <td>{d[0]}</td>
-            <td>{d[1]}</td>
-            <td>{d[2]}</td>
+            <td>{year}</td>
+            <td>N/A</td>
+            <td>{data[year]}</td>
           </tr>
         ))}
       </Table>

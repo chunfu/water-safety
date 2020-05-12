@@ -1,13 +1,17 @@
 import * as xlsx from 'xlsx';
 import { Client } from '@googlemaps/google-maps-services-js';
+import countyNameMapping from './countyNameMapping';
 import * as futil from '../../lib/files';
 import {
   eventCounty,
   eventLocation,
   eventMonth,
+  eventAm,
+  eventYear,
+  eventTime,
   API_KEY,
 } from '../../lib/const';
-import { uniqBy, get } from 'lodash';
+import { groupBy, uniqBy, get } from 'lodash';
 
 const gmap = new Client();
 
@@ -35,18 +39,43 @@ const getPlaces = (sheetsData) => {
     dataArr.forEach((d) => {
       // iterate each record from data
       if (!d[eventLocation]) return;
+      if (d[eventLocation] === '不明') return;
+      if (d[eventLocation] === '其它') return;
+
+      const county = countyNameMapping[d[eventCounty]] || d[eventCounty];
+      const placeName = d[eventLocation];
 
       places.push({
-        county: d[eventCounty],
-        placeName: d[eventLocation],
+        query: `${county}${placeName}`,
+        year: sheetName,
+        placeName,
+        county,
         ...d,
       });
     });
   });
 
-  return uniqBy(places, 'placeName').filter(
-    ({ placeName }) => placeName !== '不明' && placeName !== '其它',
-  );
+  // { query: [{ placeName, county, year }, ...]}
+  let validPlaceObj = groupBy(places, 'query');
+  // { query: { year1: x, year2: y, county, placeName }}
+  validPlaceObj = Object.keys(validPlaceObj).reduce((acc, key) => {
+    const eventsArr = acc[key];
+    const { county, placeName } = eventsArr[0];
+    let yearObj = groupBy(eventsArr, 'year');
+    yearObj = Object.keys(yearObj).reduce(
+      (acc, year) => ({ ...acc, [year]: acc[year].length }),
+      yearObj,
+    );
+    return {
+      ...acc,
+      [key]: {
+        county,
+        placeName,
+        ...yearObj,
+      },
+    };
+  }, validPlaceObj);
+  return validPlaceObj;
 };
 
 const genPlaceLatLng = async (req, res) => {
@@ -54,18 +83,21 @@ const genPlaceLatLng = async (req, res) => {
   const sheetsData = excel2json(futil.DROWN_PATH);
 
   // get list of places
-  const places =
-    process.env.debug === 'true' ? testPlace : getPlaces(sheetsData);
+  const placeObj = getPlaces(sheetsData);
 
   // get latlng of each place
-  const promiseArr = places.map(async ({ county, placeName, ...d }) => {
+  const promiseArr = Object.keys(placeObj).map(async (query) => {
+    const { placeName, county, ...years } = placeObj[query];
     // google map
     const params = {
-      query: `${county}${placeName}`,
+      query,
       language: 'zh-TW',
       key: API_KEY,
     };
-    const result = await gmap.textSearch({ params });
+    const result =
+      process.env.debug === 'true'
+        ? await Promise.resolve({})
+        : await gmap.textSearch({ params });
 
     const { lat, lng } = get(result, 'data.results[0].geometry.location', {
       lat: '',
@@ -77,6 +109,7 @@ const genPlaceLatLng = async (req, res) => {
       placeName,
       lat,
       lng,
+      ...years,
     };
   });
   const locationsWithLatLng = await Promise.all(promiseArr);
