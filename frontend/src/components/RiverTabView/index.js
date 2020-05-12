@@ -57,16 +57,28 @@ const YearlyDeathTable = ({ data }) => {
   );
 };
 
-const RealTimeReminder = (props) => {
+const RescuePlan = (props) => {
   return (
     <Table>
       <tr>
-        <td>雨量</td>
-        <td>豪雨</td>
+        <th>配套措施項目</th>
+        <th>是否有設置</th>
       </tr>
       <tr>
-        <td>河川水位</td>
-        <td>上升</td>
+        <td>有無設置安全設施<br />(e.g. 救生圈、拋繩、浮標)</td>
+        <td>O</td>
+      </tr>
+      <tr>
+        <td>有無設置警告標示</td>
+        <td>O</td>
+      </tr>
+      <tr>
+        <td>有無設置救生站/警戒站</td>
+        <td>X</td>
+      </tr>
+      <tr>
+        <td>有無設置救生員</td>
+        <td>⌾六至八月設有救生員</td>
       </tr>
     </Table>
   );
@@ -77,11 +89,11 @@ const RiverTabView = (props) => {
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   const items = [
+    { name: '安全配套措施', content: <RescuePlan /> },
     {
       name: '歷年溺水死亡人數紀錄',
       content: <YearlyDeathTable data={config.history} />,
     },
-    { name: '即時風險因子提醒', content: <RealTimeReminder /> },
   ];
   const names = items.map((i) => i.name);
 
