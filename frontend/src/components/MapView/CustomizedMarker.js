@@ -1,6 +1,7 @@
 import React from 'react';
 import { Marker } from 'react-leaflet';
 import L from 'leaflet';
+
 const divIcon = new L.divIcon({ className: 'marker-div-icon' });
 
 const CustomizedMarker = props => {

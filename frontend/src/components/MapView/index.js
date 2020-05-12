@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useRef, useMemo } from 'react';
 import { Map, TileLayer, Popup } from 'react-leaflet';
-import Leaflet from 'leaflet'
+import Leaflet from 'leaflet';
 import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
 import { SelectList } from 'gestalt';
 import styled from 'styled-components';
@@ -9,7 +9,7 @@ import ExcelUploader from '../ExcelUploader';
 import CountyTabView from '../CountyTabView';
 import RiverTabView from '../RiverTabView';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
-import { defaultRiverConfig, riverKeys } from './riverConfig';
+import { getRiverConfig } from './riverConfig';
 import CustomizedMarker from './CustomizedMarker';
 import {
   eventCounty,
@@ -93,8 +93,18 @@ const reducer = (state, action) => {
 const MapView = (props) => {
   const [mapProps, updateMapProps] = useState(MAP_INIT_PROPS);
   const [countyConfig, updateCountyConfig] = useState(defaultCountyConfig);
+  const [riverConfig, updateRiverConfig] = useState({});
+  const riverKeys = useMemo(() => Object.keys(riverConfig), [riverConfig]);
   const [state, dispatch] = useReducer(reducer, initState);
   const { selectedRiver, selectedCounty } = state;
+
+  useEffect(() => {
+    async function fn() {
+      const { defaultRiverConfig, riverKeys } = await getRiverConfig();
+      updateRiverConfig(defaultRiverConfig);
+    }
+    fn();
+  }, []);
 
   useEffect(() => {
     const newCountyConfig = countyKeys.reduce((acc, key) => {
@@ -120,7 +130,7 @@ const MapView = (props) => {
       ...mapProps,
       center: gj.getBounds().getCenter(),
       zoom: 10,
-    })
+    });
   };
 
   const onSelectCounty = (countyKey) => {
@@ -215,7 +225,7 @@ const MapView = (props) => {
       )}
       {selectedRiver && (
         <Draggable>
-          <RiverTabView config={defaultRiverConfig[selectedRiver]} />
+          <RiverTabView config={riverConfig[selectedRiver]} />
         </Draggable>
       )}
       <Map {...mapProps}>
@@ -241,7 +251,7 @@ const MapView = (props) => {
           );
         })}
         {riverKeys.map((key) => {
-          const { location } = defaultRiverConfig[key];
+          const { location } = riverConfig[key];
           return (
             <CustomizedMarker
               position={location}

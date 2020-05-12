@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.19.2",
     "gestalt": "^1.29.0",
     "leaflet": "^1.6.0",
     "lodash": "^4.17.15",
