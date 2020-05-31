@@ -10,8 +10,14 @@ import {
   eventYear,
   eventTime,
   API_KEY,
+  purpleRedSheetName,
+  redAnnouncementSheetName,
+  prCountyCol,
+  prPurpleCol,
+  prYellowCol,
+  prRedCol,
 } from '../../lib/const';
-import { groupBy, uniqBy, get } from 'lodash';
+import { groupBy, uniq, get } from 'lodash';
 
 const gmap = new Client();
 
@@ -31,7 +37,9 @@ const excel2json = (path) => {
 
 const testPlace = [{ county: '台北市', placeName: '淡水河' }];
 
-const getPlaces = (sheetsData) => {
+const normalizeCountyName = (name) => countyNameMapping[name] || name;
+
+const getYellowPlaces = (sheetsData) => {
   let places = [];
   Object.keys(sheetsData).forEach((sheetName) => {
     // iterate data from each sheet
@@ -42,7 +50,7 @@ const getPlaces = (sheetsData) => {
       if (d[eventLocation] === '不明') return;
       if (d[eventLocation] === '其它') return;
 
-      const county = countyNameMapping[d[eventCounty]] || d[eventCounty];
+      const county = normalizeCountyName(d[eventCounty]);
       const placeName = d[eventLocation];
 
       places.push({
@@ -71,6 +79,7 @@ const getPlaces = (sheetsData) => {
       [key]: {
         county,
         placeName,
+        yellow: 1, // indicate this is yellow points
         ...yearObj,
       },
     };
@@ -78,16 +87,100 @@ const getPlaces = (sheetsData) => {
   return validPlaceObj;
 };
 
+const getPurpleRedPlaces = (sheetsData, placeObj) => {
+  // 總表
+  let newPlaceObj = { ...placeObj };
+  sheetsData[purpleRedSheetName].forEach((row, j) => {
+    const county = normalizeCountyName(row[prCountyCol]);
+    const purplePlaceName = (row[prPurpleCol] || '').trim();
+    const yellowPlaceName = (row[prYellowCol] || '').trim();
+    const redPlaceName = (row[prRedCol] || '').trim();
+
+    // update purple point
+    if (purplePlaceName) {
+      const query = `${county}${purplePlaceName}`;
+      const { ypoints = [], rpoints = [] } = newPlaceObj[query] || {};
+      if (yellowPlaceName) ypoints.push(`${county}${yellowPlaceName}`);
+      if (redPlaceName) rpoints.push(`${county}${redPlaceName}`);
+      newPlaceObj[query] = {
+        ...newPlaceObj[query],
+        county,
+        placeName: purplePlaceName,
+        purple: 1,
+        ypoints,
+        rpoints,
+      };
+    }
+
+    // update yellow point
+    if (yellowPlaceName) {
+      const query = `${county}${yellowPlaceName}`;
+      const { ppoints = [], rpoints = [] } = newPlaceObj[query] || {};
+      if (purplePlaceName) ppoints.push(`${county}${purplePlaceName}`);
+      if (redPlaceName) rpoints.push(`${county}${redPlaceName}`);
+      newPlaceObj[query] = {
+        ...newPlaceObj[query],
+        county,
+        placeName: yellowPlaceName,
+        yellow: 1,
+        ppoints,
+        rpoints,
+      };
+    }
+
+    // update red point
+    if (redPlaceName) {
+      const query = `${county}${redPlaceName}`;
+      const { ypoints = [], ppoints = [] } = newPlaceObj[query] || {};
+      if (yellowPlaceName) ypoints.push(`${county}${yellowPlaceName}`);
+      if (purplePlaceName) ppoints.push(`${county}${purplePlaceName}`);
+      // 禁止公告
+      newPlaceObj[query] = {
+        ...newPlaceObj[query],
+        county,
+        placeName: redPlaceName,
+        red: 1,
+        ppoints,
+        ypoints,
+      };
+    }
+  });
+
+  return newPlaceObj;
+};
+
 const genPlaceLatLng = async (req, res) => {
   // read excel to json
   const sheetsData = excel2json(futil.DROWN_PATH);
+  const prSheetsData = excel2json(futil.PURPLE_RED_PATH);
 
   // get list of places
-  const placeObj = getPlaces(sheetsData);
+  let placeObj = getYellowPlaces(sheetsData);
+  placeObj = getPurpleRedPlaces(prSheetsData, placeObj);
 
   // get latlng of each place
   const promiseArr = Object.keys(placeObj).map(async (query) => {
-    const { placeName, county, ...years } = placeObj[query];
+    const {
+      placeName,
+      county,
+      purple,
+      yellow,
+      red,
+      ppoints: ps,
+      ypoints: ys,
+      rpoints: rs,
+      ...years
+    } = placeObj[query];
+    const ppoints = uniq(ps);
+    const ypoints = uniq(ys);
+    const rpoints = uniq(rs);
+
+    // if purple = 1, look for ypoints, if no any, try gmap
+    // if red = 1, look for ypoints, 
+    if (purple === 1 || red === 1) {
+      // TODO: enhancement to reduce requests to gmap
+    }
+
     // google map
     const params = {
       query,
@@ -109,6 +202,12 @@ const genPlaceLatLng = async (req, res) => {
       placeName,
       lat,
       lng,
+      purple,
+      yellow,
+      red,
+      ppoints: ppoints.join(),
+      ypoints: ypoints.join(),
+      rpoints: rpoints.join(),
       ...years,
     };
   });

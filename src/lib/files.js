@@ -35,6 +35,7 @@ const CAROPT_CONCLUSION_PATH = location =>
 const PRICE_SENS_FINAL_PATH = fullPath('PriceSens_final.xlsx');
 
 const DROWN_PATH = fullPath('drown_events.xlsx');
+const PURPLE_RED_PATH = fullPath('purple_red.xlsx');
 const WARNING_RIVERS_PATH = fullPath('warning_rivers.xlsx');
 
 export {
@@ -62,5 +63,6 @@ export {
 
 
   DROWN_PATH,
+  PURPLE_RED_PATH,
   WARNING_RIVERS_PATH,
 };
