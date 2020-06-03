@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, SegmentedControl, Box, Text, Button } from 'gestalt';
 import ReactModal from 'react-modal';
 import styled from 'styled-components';
@@ -146,13 +146,6 @@ const Announcement = ({ text }) => {
 
 const RiverTabView = (props) => {
   const { config, displayOrder } = props;
-  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
-
-  useEffect(() => {
-    // reset index every rerender
-    setSelectedItemIndex(0);
-  }, [config]);
-
   const {
     name,
     history,
@@ -162,43 +155,54 @@ const RiverTabView = (props) => {
     ppoints,
     announcement: announcementText,
   } = config;
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
-  let warningRivers = null;
-  if (ppoints.length) {
-    warningRivers = {
-      name: '縣市公告警示水域',
-      content: <RescuePlan points={ppoints} />,
-    };
-  }
+  useEffect(() => {
+    // reset index every rerender
+    setSelectedItemIndex(0);
+  }, [name]);
 
-  if (purple && !yellow && !red) {
-    warningRivers = {
-      name: '縣市公告警示水域',
-      content: <RescuePlan points={[name]} />,
-    };
-  }
 
-  let announcement = null;
-  if (red) {
-    announcement = {
-      name: '禁止公告',
-      content: <Announcement text={announcementText} />,
-    };
-  }
+  const items = useMemo(() => {
+    let warningRivers = null;
+    if (ppoints.length) {
+      warningRivers = {
+        name: '縣市公告警示水域',
+        content: <RescuePlan points={ppoints} />,
+      };
+    }
 
-  let deathRecords = null;
-  if (!isEmpty(history)) {
-    deathRecords = {
-      name: '歷年溺水死亡人數紀錄',
-      content: <YearlyDeathTable data={config.history} />,
-    };
-  }
+    if (purple && !yellow && !red) {
+      warningRivers = {
+        name: '縣市公告警示水域',
+        content: <RescuePlan points={[name]} />,
+      };
+    }
 
-  const items = [announcement, warningRivers, deathRecords].filter((v) => v);
+    let announcement = null;
+    if (red) {
+      announcement = {
+        name: '禁止公告',
+        content: <Announcement text={announcementText} />,
+      };
+    }
+
+    let deathRecords = null;
+    if (!isEmpty(history)) {
+      deathRecords = {
+        name: '歷年溺水死亡人數紀錄',
+        content: <YearlyDeathTable data={config.history} />,
+      };
+    }
+
+    return [announcement, warningRivers, deathRecords].filter((v) => v);
+  }, [name]);
+
   const names = items.map((i) => i.name);
 
   const handleOnChange = ({ activeIndex }) => setSelectedItemIndex(activeIndex);
 
+  const selectedItem = items[selectedItemIndex] && items[selectedItemIndex].content;
   return (
     <TabViewContainer {...props} displayOrder={displayOrder}>
       <Heading color="gray" size="md" align="center">
@@ -209,7 +213,7 @@ const RiverTabView = (props) => {
         onChange={handleOnChange}
         items={names}
       />
-      <ContentStyle>{items[selectedItemIndex].content}</ContentStyle>
+      <ContentStyle>{selectedItem}</ContentStyle>
     </TabViewContainer>
   );
 };
