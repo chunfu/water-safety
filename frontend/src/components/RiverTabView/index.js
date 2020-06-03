@@ -137,15 +137,32 @@ const RescuePlan = ({ points }) => {
   );
 };
 
-const H2 = styled.h2`color: red`;
+const H2 = styled.h2`
+  color: red;
+`;
 const Announcement = ({ text }) => {
-  return <H2>{text}</H2>
+  return <H2>{text}</H2>;
 };
 
 const RiverTabView = (props) => {
   const { config, displayOrder } = props;
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
-  const { name, history, purple, yellow, red, ppoints, announcement: announcementText } = config;
+
+  useEffect(() => {
+    // reset index every rerender
+    setSelectedItemIndex(0);
+  }, [config]);
+
+  const {
+    name,
+    history,
+    purple,
+    yellow,
+    red,
+    ppoints,
+    announcement: announcementText,
+  } = config;
+
   let warningRivers = null;
   if (ppoints.length) {
     warningRivers = {
@@ -153,6 +170,7 @@ const RiverTabView = (props) => {
       content: <RescuePlan points={ppoints} />,
     };
   }
+
   if (purple && !yellow && !red) {
     warningRivers = {
       name: '縣市公告警示水域',
@@ -167,6 +185,7 @@ const RiverTabView = (props) => {
       content: <Announcement text={announcementText} />,
     };
   }
+
   let deathRecords = null;
   if (!isEmpty(history)) {
     deathRecords = {

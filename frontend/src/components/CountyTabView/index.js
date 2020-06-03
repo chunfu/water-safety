@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { SegmentedControl } from 'gestalt';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
@@ -128,8 +128,14 @@ const DangerRiverTable = ({ data }) => {
 };
 
 const CountyTabView = (props) => {
-  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const { config } = props;
+
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  useEffect(() => {
+    // reset index every rerender
+    setSelectedItemIndex(0);
+  }, [config]);
+
   const { accidentData = [] } = config;
   const uniqAccidentData = uniqBy(
     accidentData,
