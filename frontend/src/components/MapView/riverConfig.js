@@ -5,14 +5,35 @@ async function getRiverConfig() {
 
   let riverKeys = [];
   const defaultRiverConfig = data.reduce((acc, cur) => {
-    const { county, placeName, lat, lng, ...history } = cur;
-    riverKeys.push(placeName);
+    const {
+      county,
+      placeName,
+      lat,
+      lng,
+      purple,
+      yellow,
+      red,
+      ppoints,
+      ypoints,
+      rpoints,
+      announcement,
+      ...history
+    } = cur;
+    const key = `${county}${placeName}`;
+    riverKeys.push(key);
     return {
       ...acc,
-      [placeName]: {
+      [key]: {
         name: placeName,
         county,
-        location: [lat, lng],
+        position: [lat, lng],
+        purple,
+        yellow,
+        red,
+        ppoints: ppoints ? ppoints.split(',') : [],
+        ypoints: ypoints ? ypoints.split(',') : [],
+        rpoints: rpoints ? rpoints.split(',') : [],
+        announcement,
         history,
       },
     };

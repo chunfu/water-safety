@@ -17,7 +17,7 @@ const TabViewContainer = styled.div`
   left: 5vw;
   top: 15vh;
   width: 30vw;
-  z-index: ${(props) => props.displayOrder || 1001};
+  z-index: ${(props) => props.displayOrder || 401};
   cursor: move;
   background: white;
   border-radius: 8px;

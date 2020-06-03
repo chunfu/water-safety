@@ -26,7 +26,7 @@ const getColor = props => {
 
 const Container = styled.div`
   position: absolute;
-  z-index: 1000;
+  z-index: 401;
   right: 5vw;
   bottom: 5vh;
   background: #cfcfcf;

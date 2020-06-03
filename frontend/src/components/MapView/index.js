@@ -10,7 +10,7 @@ import CountyTabView from '../CountyTabView';
 import RiverTabView from '../RiverTabView';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
 import { getRiverConfig } from './riverConfig';
-import CustomizedMarker from './CustomizedMarker';
+import RiverPoints from './RiverPoints';
 import {
   eventCounty,
   eventAm,
@@ -25,7 +25,7 @@ const SelectListContainer = styled.div`
   right: 5vw;
   top: 15vh;
   width: 200px;
-  z-index: 1001;
+  z-index: 401;
 `;
 
 const countySelectOptions = [{ value: '', label: '選擇縣市' }].concat(
@@ -250,15 +250,11 @@ const MapView = (props) => {
             />
           );
         })}
-        {riverKeys.map((key) => {
-          const { location } = riverConfig[key];
-          return (
-            <CustomizedMarker
-              position={location}
-              onClick={() => onSelectRiver(key)}
-            ></CustomizedMarker>
-          );
-        })}
+        <RiverPoints
+          riverKeys={riverKeys}
+          riverConfig={riverConfig}
+          onSelectRiver={onSelectRiver}
+        />
       </Map>
     </>
   );

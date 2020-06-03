@@ -2,12 +2,15 @@ import React from 'react';
 import { Marker } from 'react-leaflet';
 import L from 'leaflet';
 
-const divIcon = new L.divIcon({ className: 'marker-div-icon' });
-
 const CustomizedMarker = props => {
-  const { children } = props;
+  const { children, data } = props;
+  const { position, yellow, red } = data;
+
+  const className = red ? 'red' : yellow ? 'yellow' : 'purple';
+  const divIcon = new L.divIcon({ className: `marker-div-icon ${className}` });
+
   return (
-    <Marker {...props} icon={divIcon}>
+    <Marker {...props} position={position} icon={divIcon}>
       {children}
     </Marker>
   );
