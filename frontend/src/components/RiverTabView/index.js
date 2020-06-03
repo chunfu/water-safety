@@ -137,8 +137,8 @@ const RescuePlan = ({ points }) => {
   );
 };
 
+const H2 = styled.h2`color: red`;
 const Announcement = ({ text }) => {
-  const H2 = styled.h2`color: red`;
   return <H2>{text}</H2>
 };
 
