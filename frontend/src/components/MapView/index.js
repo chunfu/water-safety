@@ -8,9 +8,9 @@ import Draggable from 'react-draggable';
 import ExcelUploader from '../ExcelUploader';
 import CountyTabView from '../CountyTabView';
 import RiverTabView from '../RiverTabView';
+import { RiverPoints, CountyRiverList } from '../RiverComps';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
 import { getRiverConfig } from './riverConfig';
-import RiverPoints from './RiverPoints';
 import {
   eventCounty,
   eventAm,
@@ -23,7 +23,7 @@ import {
 const SelectListContainer = styled.div`
   position: absolute;
   right: 5vw;
-  top: 15vh;
+  top: ${(props) => props.top || '15vh'};
   width: 200px;
   z-index: 401;
 `;
@@ -31,7 +31,7 @@ const SelectListContainer = styled.div`
 const countySelectOptions = [{ value: '', label: '選擇縣市' }].concat(
   countyKeys.map((key) => ({
     value: key,
-    label: defaultCountyConfig[key].name[0],
+    label: key,
   })),
 );
 
@@ -222,6 +222,17 @@ const MapView = (props) => {
         <Draggable>
           <CountyTabView config={countyConfig[selectedCounty]} />
         </Draggable>
+      )}
+      {selectedCounty && (
+        <SelectListContainer top="25vh">
+          <CountyRiverList
+            county={selectedCounty}
+            riverConfig={riverConfig}
+            riverKeys={riverKeys}
+            selectedRiver={selectedRiver}
+            onSelectRiver={onSelectRiver}
+          />
+        </SelectListContainer>
       )}
       {selectedRiver && (
         <Draggable>

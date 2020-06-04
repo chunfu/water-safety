@@ -173,6 +173,7 @@ const RiverTabView = (props) => {
     }
 
     if (purple && !yellow && !red) {
+      // TODO: should use county + name as input array
       warningRivers = {
         name: '縣市公告警示水域',
         content: <RescuePlan points={[name]} />,
