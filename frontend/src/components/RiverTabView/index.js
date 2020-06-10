@@ -140,7 +140,6 @@ const RiverTabView = (props) => {
     }
 
     if (purple && !yellow && !red) {
-      // TODO: should use county + name as input array
       warningRivers = {
         name: '縣市公告警示水域',
         content: <RescuePlan points={[keyName]} />,
@@ -155,6 +154,15 @@ const RiverTabView = (props) => {
       };
     }
 
+    let safetyCondition = null;
+    // yellow only
+    if (!warningRivers && !announcement) {
+      safetyCondition = {
+        name: '安全措施設置狀態',
+        content: <RescuePlan points={[keyName]} />,
+      }
+    }
+
     let deathRecords = null;
     if (!isEmpty(history)) {
       deathRecords = {
@@ -163,7 +171,7 @@ const RiverTabView = (props) => {
       };
     }
 
-    return [announcement, warningRivers, deathRecords].filter((v) => v);
+    return [announcement, warningRivers, safetyCondition, deathRecords].filter((v) => v);
   }, [name]);
 
   const names = items.map((i) => i.name);
