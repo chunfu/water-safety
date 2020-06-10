@@ -17,14 +17,17 @@ const ForbiddenRiverTable = ({ data }) => {
       <Table>
         <tr>
           <th>水域名稱</th>
-          <th>禁止範圍</th>
+          <th>禁止公告</th>
         </tr>
-        <tr>
-          <td>南勢溪</td>
-          <td>
-            南勢溪水域下龜山橋、萬年 橋至桂山電廠附近水域禁止 從事水域遊憩活動。
-          </td>
-        </tr>
+        {data.map((d) => {
+          const { name, announcement } = d;
+          return (
+            <tr>
+              <td>{name}</td>
+              <td>{announcement}</td>
+            </tr>
+          );
+        })}
       </Table>
     </div>
   );
@@ -74,6 +77,7 @@ const DangerRiverTable = ({ data }) => {
       </tr>
       {rivers
         .sort((a, b) => data[b].length - data[a].length)
+        .filter((r) => data[r].length > 1)
         .map((r) => {
           const accidents = data[r];
           return accidents
@@ -94,7 +98,7 @@ const DangerRiverTable = ({ data }) => {
 };
 
 const CountyTabView = (props) => {
-  const { keyName, config } = props;
+  const { keyName, config, rivers } = props;
 
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   useEffect(() => {
@@ -109,12 +113,13 @@ const CountyTabView = (props) => {
   );
   const yearlyAccidents = groupBy(uniqAccidentData, eventYear);
   const dangerRivers = groupBy(uniqAccidentData, eventLocation);
+  const forbiddenRivers = rivers.filter((r) => r.red);
 
   const items = useMemo(
     () => [
       {
         name: '禁止前往水域',
-        content: <ForbiddenRiverTable />,
+        content: <ForbiddenRiverTable data={forbiddenRivers} />,
       },
       {
         name: '重覆發生學生溺水死亡意外之水域',
@@ -132,7 +137,8 @@ const CountyTabView = (props) => {
 
   const handleOnChange = ({ activeIndex }) => setSelectedItemIndex(activeIndex);
 
-  const selectedItem = items[selectedItemIndex] && items[selectedItemIndex].content;
+  const selectedItem =
+    items[selectedItemIndex] && items[selectedItemIndex].content;
   return (
     <TabViewContainer {...props}>
       <Heading color="darkGray" size="md" align="center">

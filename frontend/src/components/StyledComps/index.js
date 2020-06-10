@@ -15,7 +15,7 @@ const TabViewContainer = styled.div`
     margin-bottom: 10px;
   }
   [aria-selected=true] {
-    color: yellow;
+    border: 1px solid black;
   }
 `;
 

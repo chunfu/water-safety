@@ -97,6 +97,12 @@ const reducer = (state, action) => {
   }
 };
 
+const getCountyRiverConfig = (county, riverConfig) => {
+  return Object.keys(riverConfig)
+    .filter((r) => riverConfig[r].county === county)
+    .map((r) => riverConfig[r]);
+};
+
 const MapView = (props) => {
   const contextValue = useContext(IndexContext);
   const [mapProps, updateMapProps] = useState(MAP_INIT_PROPS);
@@ -230,6 +236,7 @@ const MapView = (props) => {
         <Draggable>
           <CountyTabView
             config={countyConfig[selectedCounty]}
+            rivers={getCountyRiverConfig(selectedCounty, riverConfig)}
             keyName={selectedCounty}
           />
         </Draggable>
