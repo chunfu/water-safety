@@ -5,6 +5,9 @@ import { isEmpty } from 'lodash';
 import { Heading } from 'gestalt';
 import { TabViewContainer, ContentStyle, Table, H2 } from '../StyledComps';
 
+const cwb = 'https://www.cwb.gov.tw/V8/C/';
+const eocdss = 'http://eocdss.ncdr.nat.gov.tw/';
+
 // data: { 2005: 1, 2006:2 ...}
 const YearlyDeathTable = ({ data }) => {
   return (
@@ -53,11 +56,10 @@ const RescuePlan = ({ points }) => {
               alignItems="center"
               direction="row"
               display="flex"
-              marginStart={-1}
-              marginEnd={-1}
               marginBottom={2}
+              justifyContent="between"
             >
-              <Box paddingX={1} flex="grow">
+              <Box paddingX={1}>
                 <Text weight="bold">{p}</Text>
               </Box>
               <Box paddingX={1}>
@@ -160,7 +162,7 @@ const RiverTabView = (props) => {
       safetyCondition = {
         name: '安全措施設置狀態',
         content: <RescuePlan points={[keyName]} />,
-      }
+      };
     }
 
     let deathRecords = null;
@@ -171,7 +173,9 @@ const RiverTabView = (props) => {
       };
     }
 
-    return [announcement, warningRivers, safetyCondition, deathRecords].filter((v) => v);
+    return [announcement, warningRivers, safetyCondition, deathRecords].filter(
+      (v) => v,
+    );
   }, [name]);
 
   const names = items.map((i) => i.name);
@@ -192,6 +196,16 @@ const RiverTabView = (props) => {
         size="lg"
       />
       <ContentStyle>{selectedItem}</ContentStyle>
+      <Box display="flex" justifyContent="center">
+        即時天氣狀況請查詢
+        <a href={cwb} target="_blank">
+          氣象局
+        </a>
+        及
+        <a href={eocdss} target="_blank">
+          災害情資網
+        </a>
+      </Box>
     </TabViewContainer>
   );
 };
