@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useReducer, useRef, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useContext,
+  useMemo,
+} from 'react';
 import { Map, TileLayer, Popup } from 'react-leaflet';
 import Leaflet from 'leaflet';
 import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
@@ -11,6 +17,7 @@ import RiverTabView from '../RiverTabView';
 import { RiverPoints, CountyRiverList } from '../RiverComps';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
 import { getRiverConfig } from './riverConfig';
+import { IndexContext } from '../../App';
 import {
   eventCounty,
   eventAm,
@@ -44,7 +51,7 @@ const geoJsonStyle = {
 const geoJsonFocusStyle = {
   ...geoJsonStyle,
   fillOpacity: 1,
-  fillColor: '#FDC500',
+  fillColor: '#ffee93',
 };
 
 const maxBounds = [
@@ -91,6 +98,7 @@ const reducer = (state, action) => {
 };
 
 const MapView = (props) => {
+  const contextValue = useContext(IndexContext);
   const [mapProps, updateMapProps] = useState(MAP_INIT_PROPS);
   const [countyConfig, updateCountyConfig] = useState(defaultCountyConfig);
   const [riverConfig, updateRiverConfig] = useState({});
@@ -220,7 +228,10 @@ const MapView = (props) => {
       </SelectListContainer>
       {selectedCounty && (
         <Draggable>
-          <CountyTabView config={countyConfig[selectedCounty]} />
+          <CountyTabView
+            config={countyConfig[selectedCounty]}
+            keyName={selectedCounty}
+          />
         </Draggable>
       )}
       {selectedCounty && (
@@ -236,37 +247,43 @@ const MapView = (props) => {
       )}
       {selectedRiver && (
         <Draggable>
-          <RiverTabView config={riverConfig[selectedRiver]} />
+          <RiverTabView
+            config={riverConfig[selectedRiver]}
+            keyName={selectedRiver}
+          />
         </Draggable>
       )}
-      <Map {...mapProps}>
-        <TileLayer
-          url="http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &amp; USGS'
-        />
-        {/* https://leaflet-extras.github.io/leaflet-providers/preview/ */}
-        {/* <TileLayer
+      {contextValue.THUNDERFOREST_APIKEY && (
+        <Map {...mapProps}>
+          <TileLayer
+            url="https://{s}.tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey={apikey}"
+            attribution='&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            apikey={contextValue.THUNDERFOREST_APIKEY}
+          />
+          {/* https://leaflet-extras.github.io/leaflet-providers/preview/ */}
+          {/* <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         /> */}
-        {countyKeys.map((key) => {
-          const { geojson, style = geoJsonStyle } = countyConfig[key];
-          return (
-            <GeoJSONFillable
-              data={geojson}
-              style={(feature) => style}
-              onClick={() => {
-                onSelectCounty(key);
-              }}
-            />
-          );
-        })}
-        <RiverPoints
-          riverKeys={riverKeys}
-          riverConfig={riverConfig}
-          onSelectRiver={onSelectRiver}
-        />
-      </Map>
+          {countyKeys.map((key) => {
+            const { geojson, style = geoJsonStyle } = countyConfig[key];
+            return (
+              <GeoJSONFillable
+                data={geojson}
+                style={(feature) => style}
+                onClick={() => {
+                  onSelectCounty(key);
+                }}
+              />
+            );
+          })}
+          <RiverPoints
+            riverKeys={riverKeys}
+            riverConfig={riverConfig}
+            onSelectRiver={onSelectRiver}
+          />
+        </Map>
+      )}
     </>
   );
 };

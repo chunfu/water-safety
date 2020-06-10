@@ -13,9 +13,11 @@ const prYellowCol = '學生溺水分析調整後的發生地點(黃點)';
 const prRedCol = '禁止公告(紅點)';
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const THUNDERFOREST_APIKEY = process.env.THUNDERFOREST_APIKEY;
 
 export {
   API_KEY,
+  THUNDERFOREST_APIKEY,
 
   eventCounty,
   eventLocation,

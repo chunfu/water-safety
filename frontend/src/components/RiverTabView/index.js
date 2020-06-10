@@ -1,39 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Modal, SegmentedControl, Box, Text, Button } from 'gestalt';
+import { SegmentedControl, Box, Text, Button } from 'gestalt';
 import ReactModal from 'react-modal';
-import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 import { Heading } from 'gestalt';
-
-const TabViewContainer = styled.div`
-  position: absolute;
-  left: 5vw;
-  top: 15vh;
-  width: 30vw;
-  z-index: ${(props) => props.displayOrder || 401};
-  cursor: move;
-  background: white;
-  border-radius: 8px;
-`;
-
-const ContentStyle = styled.div`
-  padding: 5px 10px;
-  overflow: auto;
-  height: 60vh;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  &,
-  th,
-  td {
-    border: 1px solid black;
-  }
-  td {
-    text-align: center;
-  }
-`;
+import { TabViewContainer, ContentStyle, Table, H2 } from '../StyledComps';
 
 // data: { 2005: 1, 2006:2 ...}
 const YearlyDeathTable = ({ data }) => {
@@ -70,6 +40,7 @@ const modalStyle = {
     transform: 'translate(-50%, -50%)',
   },
 };
+
 const RescuePlan = ({ points }) => {
   const [show, setShow] = useState(false);
 
@@ -137,15 +108,12 @@ const RescuePlan = ({ points }) => {
   );
 };
 
-const H2 = styled.h2`
-  color: red;
-`;
 const Announcement = ({ text }) => {
   return <H2>{text}</H2>;
 };
 
 const RiverTabView = (props) => {
-  const { config, displayOrder } = props;
+  const { keyName, config, displayOrder } = props;
   const {
     name,
     history,
@@ -162,7 +130,6 @@ const RiverTabView = (props) => {
     setSelectedItemIndex(0);
   }, [name]);
 
-
   const items = useMemo(() => {
     let warningRivers = null;
     if (ppoints.length) {
@@ -176,7 +143,7 @@ const RiverTabView = (props) => {
       // TODO: should use county + name as input array
       warningRivers = {
         name: '縣市公告警示水域',
-        content: <RescuePlan points={[name]} />,
+        content: <RescuePlan points={[keyName]} />,
       };
     }
 
@@ -203,16 +170,18 @@ const RiverTabView = (props) => {
 
   const handleOnChange = ({ activeIndex }) => setSelectedItemIndex(activeIndex);
 
-  const selectedItem = items[selectedItemIndex] && items[selectedItemIndex].content;
+  const selectedItem =
+    items[selectedItemIndex] && items[selectedItemIndex].content;
   return (
-    <TabViewContainer {...props} displayOrder={displayOrder}>
-      <Heading color="gray" size="md" align="center">
-        {config.name}
+    <TabViewContainer {...props}>
+      <Heading color="darkGray" size="md" align="center">
+        {keyName}
       </Heading>
       <SegmentedControl
         selectedItemIndex={selectedItemIndex}
         onChange={handleOnChange}
         items={names}
+        size="lg"
       />
       <ContentStyle>{selectedItem}</ContentStyle>
     </TabViewContainer>

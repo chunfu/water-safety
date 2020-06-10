@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { SegmentedControl } from 'gestalt';
-import styled from 'styled-components';
-import { isEmpty } from 'lodash';
+import { isEmpty, groupBy, uniqBy } from 'lodash';
 import { Heading } from 'gestalt';
+import { TabViewContainer, ContentStyle, Table } from '../StyledComps';
 import {
   eventAm,
   eventLocation,
@@ -10,40 +10,6 @@ import {
   eventMonth,
   eventTime,
 } from '../../const';
-import { groupBy, uniqBy } from 'lodash';
-
-const TabViewContainer = styled.div`
-  position: absolute;
-  left: 5vw;
-  top: 15vh;
-  width: 30vw;
-  z-index: ${(props) => props.displayOrder || 401};
-  cursor: move;
-  background: white;
-  border-radius: 8px;
-`;
-
-const ContentStyle = styled.div`
-  padding: 5px 10px;
-  overflow: auto;
-  height: 60vh;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  &,
-  th,
-  td {
-    border: 1px solid black;
-  }
-  td {
-    text-align: center;
-  }
-  th:first-child {
-    width: 180px;
-  }
-`;
 
 const ForbiddenRiverTable = ({ data }) => {
   return (
@@ -128,7 +94,7 @@ const DangerRiverTable = ({ data }) => {
 };
 
 const CountyTabView = (props) => {
-  const { config } = props;
+  const { keyName, config } = props;
 
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   useEffect(() => {
@@ -166,17 +132,19 @@ const CountyTabView = (props) => {
 
   const handleOnChange = ({ activeIndex }) => setSelectedItemIndex(activeIndex);
 
+  const selectedItem = items[selectedItemIndex] && items[selectedItemIndex].content;
   return (
     <TabViewContainer {...props}>
-      <Heading color="gray" size="md" align="center">
-        {config.name[0]}
+      <Heading color="darkGray" size="md" align="center">
+        {keyName}
       </Heading>
       <SegmentedControl
         selectedItemIndex={selectedItemIndex}
         onChange={handleOnChange}
         items={names}
+        size="lg"
       />
-      <ContentStyle>{items[selectedItemIndex].content}</ContentStyle>
+      <ContentStyle>{selectedItem}</ContentStyle>
     </TabViewContainer>
   );
 };
