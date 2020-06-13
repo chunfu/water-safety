@@ -155,6 +155,8 @@ const MapView = (props) => {
   };
 
   const makeAccidentData = ({ sheetName, record }) => {
+    if (record[eventLocation] === '其它') return [];
+
     const obj = {
       [eventLocation]: record[eventLocation],
       [eventYear]: sheetName,

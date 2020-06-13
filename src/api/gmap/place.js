@@ -88,7 +88,7 @@ const getYellowPlaces = (sheetsData) => {
 };
 
 const getPurpleRedPlaces = (sheetsData, placeObj) => {
-  // 總表
+  // read 總表
   let newPlaceObj = { ...placeObj };
   sheetsData[purpleRedSheetName].forEach((row, j) => {
     const county = normalizeCountyName(row[prCountyCol]);
@@ -129,12 +129,12 @@ const getPurpleRedPlaces = (sheetsData, placeObj) => {
     }
 
     // update red point
+    // TODO: read 禁止公告
     if (redPlaceName) {
       const query = `${county}${redPlaceName}`;
       const { ypoints = [], ppoints = [] } = newPlaceObj[query] || {};
       if (yellowPlaceName) ypoints.push(`${county}${yellowPlaceName}`);
       if (purplePlaceName) ppoints.push(`${county}${purplePlaceName}`);
-      // 禁止公告
       newPlaceObj[query] = {
         ...newPlaceObj[query],
         county,
