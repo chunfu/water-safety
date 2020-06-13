@@ -1,5 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+const mapBackgroundColor = css`
+  background: #ABE1FA;
+`;
 
 const TabViewContainer = styled.div`
   position: absolute;
@@ -14,7 +17,7 @@ const TabViewContainer = styled.div`
   h2 {
     margin-bottom: 10px;
   }
-  [aria-selected=true] {
+  [aria-selected='true'] {
     border: 1px solid black;
   }
 `;
@@ -35,7 +38,7 @@ const Table = styled.table`
   td {
     padding: 5px;
     background: #ddd;
-    border-bottom: 2px solid white; 
+    border-bottom: 2px solid white;
   }
   th {
     background: #111;
@@ -54,4 +57,37 @@ const H2 = styled.h2`
   color: red;
 `;
 
-export { TabViewContainer, ContentStyle, Table, H2 };
+const SelectListContainer = styled.div`
+  position: absolute;
+  right: 5vw;
+  top: ${(props) => props.top || '15vh'};
+  bottom: ${(props) => props.bottom || ''};
+  width: 200px;
+  z-index: 401;
+  ${mapBackgroundColor}
+`;
+
+const Tooltip = styled.div`
+  position: absolute;
+  right: 5vw;
+  top: ${(props) => props.top || '35vh'};
+  bottom: ${(props) => props.bottom || ''};
+  width: 200px;
+  z-index: 401;
+  ${mapBackgroundColor}
+  > div {
+    margin-bottom: 10px;
+  }
+  .marker-div-icon {
+    margin-right: 10px;
+  }
+`;
+
+export {
+  TabViewContainer,
+  ContentStyle,
+  Table,
+  H2,
+  SelectListContainer,
+  Tooltip,
+};

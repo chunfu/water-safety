@@ -198,11 +198,11 @@ const RiverTabView = (props) => {
       <ContentStyle>{selectedItem}</ContentStyle>
       <Box display="flex" justifyContent="center">
         即時天氣狀況請查詢
-        <a href={cwb} target="_blank">
+        <a href={cwb} target="_blank" rel="noopener noreferrer">
           氣象局
         </a>
         及
-        <a href={eocdss} target="_blank">
+        <a href={eocdss} target="_blank" rel="noopener noreferrer">
           災害情資網
         </a>
       </Box>

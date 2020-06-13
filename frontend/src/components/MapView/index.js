@@ -9,11 +9,11 @@ import { Map, TileLayer, Popup } from 'react-leaflet';
 import Leaflet from 'leaflet';
 import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
 import { SelectList } from 'gestalt';
-import styled from 'styled-components';
 import Draggable from 'react-draggable';
 import ExcelUploader from '../ExcelUploader';
 import CountyTabView from '../CountyTabView';
 import RiverTabView from '../RiverTabView';
+import { SelectListContainer, Tooltip } from '../StyledComps';
 import { RiverPoints, CountyRiverList } from '../RiverComps';
 import { defaultCountyConfig, countyKeys } from './countyConfig';
 import { getRiverConfig } from './riverConfig';
@@ -26,14 +26,6 @@ import {
   eventYear,
   eventMonth,
 } from '../../const';
-
-const SelectListContainer = styled.div`
-  position: absolute;
-  right: 5vw;
-  top: ${(props) => props.top || '15vh'};
-  width: 200px;
-  z-index: 401;
-`;
 
 const countySelectOptions = [{ value: '', label: '選擇縣市' }].concat(
   countyKeys.map((key) => ({
@@ -260,6 +252,11 @@ const MapView = (props) => {
           />
         </Draggable>
       )}
+      <Tooltip>
+        <div><div className="marker-div-icon red" />縣市公告禁止前往水域</div>
+        <div><div className="marker-div-icon yellow" />曾經發生學生溺水水域</div>
+        <div><div className="marker-div-icon purple" />縣市提示須注意水域</div>
+      </Tooltip>
       {contextValue.THUNDERFOREST_APIKEY && (
         <Map {...mapProps}>
           <TileLayer

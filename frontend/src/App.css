@@ -1,7 +1,8 @@
 .marker-div-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 12px;
 }
 
 .marker-div-icon.purple {
@@ -11,5 +12,5 @@
   background: #f49015;
 }
 .marker-div-icon.red {
-  background: #8c271e;
+  background: red;
 }
