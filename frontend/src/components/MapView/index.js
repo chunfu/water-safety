@@ -57,7 +57,7 @@ const MAP_INIT_PROPS = {
   maxBounds,
   zoom: DEFAULT_ZOOM_LEVEL,
   minZoom: DEFAULT_ZOOM_LEVEL,
-  maxZoom: DEFAULT_ZOOM_LEVEL + 2,
+  maxZoom: DEFAULT_ZOOM_LEVEL + 3,
 };
 
 const TYPE_SELECT_COUTY = 'selectCounty';

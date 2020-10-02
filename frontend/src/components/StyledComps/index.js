@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 const mapBackgroundColor = css`
-  background: #ABE1FA;
+  background: transparent;
 `;
 
 const TabViewContainer = styled.div`
