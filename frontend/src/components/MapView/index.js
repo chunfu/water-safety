@@ -246,13 +246,15 @@ const MapView = (props) => {
           {countyKeys.map((key) => {
             const { geojson, style = geoJsonStyle } = countyConfig[key];
             return (
-              <GeoJSONFillable
-                data={geojson}
-                style={(feature) => style}
-                onClick={() => {
-                  onSelectCounty(key);
-                }}
-              />
+              geojson && (
+                <GeoJSONFillable
+                  data={geojson}
+                  style={(feature) => style}
+                  onClick={() => {
+                    onSelectCounty(key);
+                  }}
+                />
+              )
             );
           })}
           <RiverPoints
