@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import ChanghuaGeoJson from '../../geojson/changhua.json';
 import ChiayiGeoJson from '../../geojson/chiayi.json';
 import ChiayiCityGeoJson from '../../geojson/chiayicity.json';
@@ -44,7 +46,7 @@ const taoyuan = '桃園縣';
 const yilan = '宜蘭縣';
 const yunlin = '雲林縣';
 // same county can have multiple name
-const defaultCountyConfig = {
+const basicCountyConfig = {
   [changhua]: { name: ['彰化縣'], geojson: ChanghuaGeoJson, order: 8 },
   [chiayi]: { name: ['嘉義縣'], geojson: ChiayiGeoJson, order: 12 },
   [chiayicity]: { name: ['嘉義市'], geojson: ChiayiCityGeoJson, order: 11 },
@@ -89,8 +91,24 @@ const defaultCountyConfig = {
   [yunlin]: { name: ['雲林縣'], geojson: YunlinGeoJson, order: 10 },
 };
 
-const countyKeys = Object.keys(defaultCountyConfig).sort(
-  (a, b) => defaultCountyConfig[a].order - defaultCountyConfig[b].order
+const countyKeys = Object.keys(basicCountyConfig).sort(
+  (a, b) => basicCountyConfig[a].order - basicCountyConfig[b].order
 );
 
-export { defaultCountyConfig, countyKeys };
+const getCountyConfig = async () => {
+  const { data } = await axios.get('/api/county');
+
+  // merge data with basicCountyConfig
+  return countyKeys.reduce((acc, key) => {
+    const config = acc[key];
+    acc[key] = {
+      ...config,
+      ...data[key],
+    }
+
+    return acc;
+  }, basicCountyConfig);
+
+}
+
+export { getCountyConfig, countyKeys };

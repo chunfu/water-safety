@@ -14,3 +14,8 @@ TODO
 1. get latlng of danger river
 1. combine result with warning river
 1. get latlng of purple river
+
+==================
+
+20201001
+1. "屏東縣荖濃溪沿岸"(紫色點)位在高雄市 -> data error, there are 2 points with the same position but no relationship

@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as xlsx from 'xlsx';
 import { Client } from '@googlemaps/google-maps-services-js';
 import countyNameMapping from './countyNameMapping';
@@ -72,7 +73,7 @@ const getYellowPlaces = (sheetsData) => {
     let yearObj = groupBy(eventsArr, 'year');
     yearObj = Object.keys(yearObj).reduce(
       (acc, year) => ({ ...acc, [year]: acc[year].length }),
-      yearObj,
+      yearObj
     );
     return {
       ...acc,
@@ -176,7 +177,7 @@ const genPlaceLatLng = async (req, res) => {
     const rpoints = uniq(rs);
 
     // if purple = 1, look for ypoints, if no any, try gmap
-    // if red = 1, look for ypoints, 
+    // if red = 1, look for ypoints,
     if (purple === 1 || red === 1) {
       // TODO: enhancement to reduce requests to gmap
     }
@@ -233,4 +234,79 @@ const getPlaceLatLng = (req, res) => {
   res.json(placeList);
 };
 
-export { genPlaceLatLng, getPlaceLatLng };
+const uploadCountyData = (req, res) => {
+  const { files } = req;
+  try {
+    Object.values(files).forEach((f) =>
+      f.mv(futil.fullPath(f.name), (err) => {
+        const sheetsData = excel2json(futil.DROWN_PATH);
+        let countyConfig = {};
+        Object.keys(sheetsData).forEach((sheetName) => {
+          // iterate data from each sheet
+          const dataArr = sheetsData[sheetName];
+          dataArr.forEach((d) => {
+            // iterate each record from data
+
+            // find the corresponding county config
+            const county = normalizeCountyName(d[eventCounty]);
+
+            if (!county) {
+              // edge case, print it out
+              console.warn(d[eventCounty], d);
+              return;
+            }
+
+            let config = countyConfig[county] || {};
+
+            // insert current record into county config
+            let { accidentData = [] } = config;
+
+            config = {
+              ...config,
+              accidentData: accidentData.concat(
+                makeAccidentData({
+                  sheetName,
+                  record: d,
+                })
+              ),
+            };
+
+            countyConfig = {
+              ...countyConfig,
+              [county]: config,
+            };
+          });
+        });
+        fs.writeFileSync(
+          futil.COUNTY_CONFIG_PATH,
+          JSON.stringify(countyConfig),
+          'utf8'
+        );
+      })
+    );
+    res.json({ ok: 1 });
+  } catch (e) {
+    console.log(e.stack);
+    res.status(500).json({ errMsg: e.message });
+  }
+};
+
+const makeAccidentData = ({ sheetName, record }) => {
+  if (record[eventLocation] === '其它') return [];
+
+  const obj = {
+    [eventLocation]: record[eventLocation],
+    [eventYear]: sheetName,
+    [eventMonth]: record[eventMonth],
+    [eventAm]: record[eventAm],
+    [eventTime]: record[eventTime],
+  };
+  return obj;
+};
+
+const getCountyData = (req, res) => {
+  const countyConfig = JSON.parse(fs.readFileSync(futil.COUNTY_CONFIG_PATH));
+  res.json(countyConfig);
+};
+
+export { genPlaceLatLng, getPlaceLatLng, uploadCountyData, getCountyData };

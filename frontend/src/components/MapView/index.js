@@ -5,6 +5,7 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
+import axios from 'axios';
 import { Map, TileLayer, Popup } from 'react-leaflet';
 import Leaflet from 'leaflet';
 import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
@@ -15,7 +16,7 @@ import CountyTabView from '../CountyTabView';
 import RiverTabView from '../RiverTabView';
 import { SelectListContainer, Tooltip } from '../StyledComps';
 import { RiverPoints, CountyRiverList } from '../RiverComps';
-import { defaultCountyConfig, countyKeys } from './countyConfig';
+import { getCountyConfig, countyKeys } from './countyConfig';
 import { getRiverConfig } from './riverConfig';
 import { IndexContext } from '../../App';
 import {
@@ -27,11 +28,18 @@ import {
   eventMonth,
 } from '../../const';
 
+const file2form = (name) => (file) => {
+  let formData = new FormData();
+  formData.append(name, file, `${name}.xlsx`);
+
+  return formData;
+};
+
 const countySelectOptions = [{ value: '', label: '選擇縣市' }].concat(
   countyKeys.map((key) => ({
     value: key,
     label: key,
-  })),
+  }))
 );
 
 const geoJsonStyle = {
@@ -98,7 +106,7 @@ const getCountyRiverConfig = (county, riverConfig) => {
 const MapView = (props) => {
   const contextValue = useContext(IndexContext);
   const [mapProps, updateMapProps] = useState(MAP_INIT_PROPS);
-  const [countyConfig, updateCountyConfig] = useState(defaultCountyConfig);
+  const [countyConfig, updateCountyConfig] = useState({});
   const [riverConfig, updateRiverConfig] = useState({});
   const riverKeys = useMemo(() => Object.keys(riverConfig), [riverConfig]);
   const [state, dispatch] = useReducer(reducer, initState);
@@ -108,6 +116,14 @@ const MapView = (props) => {
     async function fn() {
       const { defaultRiverConfig, riverKeys } = await getRiverConfig();
       updateRiverConfig(defaultRiverConfig);
+    }
+    fn();
+  }, []);
+
+  useEffect(() => {
+    async function fn() {
+      const countyConfig = await getCountyConfig();
+      updateCountyConfig(countyConfig);
     }
     fn();
   }, []);
@@ -153,69 +169,16 @@ const MapView = (props) => {
       value: riverKey,
     });
   };
-
-  const makeAccidentData = ({ sheetName, record }) => {
-    if (record[eventLocation] === '其它') return [];
-
-    const obj = {
-      [eventLocation]: record[eventLocation],
-      [eventYear]: sheetName,
-      [eventMonth]: record[eventMonth],
-      [eventAm]: record[eventAm],
-      [eventTime]: record[eventTime],
-    };
-    return obj;
-  };
-
-  const onDropFile = (sheetsData) => {
-    let newCountyConfig = { ...countyConfig };
-    Object.keys(sheetsData).forEach((sheetName) => {
-      // iterate data from each sheet
-      const dataArr = sheetsData[sheetName];
-      dataArr.forEach((d) => {
-        // iterate each record from data
-
-        // find the corresponding county config
-        const county = countyKeys.find(
-          (countyKey) =>
-            newCountyConfig[countyKey].name.indexOf(d[eventCounty]) > -1,
-        );
-
-        if (!county) {
-          // edge case, print it out
-          console.warn(d[eventCounty], d);
-          return;
-        }
-
-        let config = newCountyConfig[county];
-
-        // insert current record into county config
-        let { accidentData = [] } = config;
-
-        config = {
-          ...config,
-          accidentData: accidentData.concat(
-            makeAccidentData({
-              sheetName,
-              record: d,
-            }),
-          ),
-        };
-
-        newCountyConfig = {
-          ...newCountyConfig,
-          [county]: config,
-        };
-      });
+  const onDrop = (acceptedFiles) => {
+    acceptedFiles.forEach(async (file) => {
+      const formData = file2form('drown_events')(file);
+      await axios.post('/api/county', formData);
     });
-
-    // update new event into that config
-    updateCountyConfig(newCountyConfig);
   };
 
   return (
     <>
-      <ExcelUploader onDropFile={onDropFile} />
+      <ExcelUploader onDrop={onDrop} />
       <SelectListContainer>
         <SelectList
           options={countySelectOptions}
@@ -255,9 +218,18 @@ const MapView = (props) => {
         </Draggable>
       )}
       <Tooltip>
-        <div><div className="marker-div-icon red" />縣市公告禁止前往水域</div>
-        <div><div className="marker-div-icon yellow" />曾經發生學生溺水水域</div>
-        <div><div className="marker-div-icon purple" />縣市提示須注意水域</div>
+        <div>
+          <div className="marker-div-icon red" />
+          縣市公告禁止前往水域
+        </div>
+        <div>
+          <div className="marker-div-icon yellow" />
+          曾經發生學生溺水水域
+        </div>
+        <div>
+          <div className="marker-div-icon purple" />
+          縣市提示須注意水域
+        </div>
       </Tooltip>
       {contextValue.THUNDERFOREST_APIKEY && (
         <Map {...mapProps}>
