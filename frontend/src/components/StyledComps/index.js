@@ -83,6 +83,13 @@ const Tooltip = styled.div`
   }
 `;
 
+const RightIcon = styled.div`
+  position: absolute;
+  right: 15px;
+  top: 20px;
+  cursor: pointer;
+`;
+
 export {
   TabViewContainer,
   ContentStyle,
@@ -90,4 +97,5 @@ export {
   H2,
   SelectListContainer,
   Tooltip,
+  RightIcon,
 };

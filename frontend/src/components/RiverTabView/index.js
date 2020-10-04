@@ -2,8 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { SegmentedControl, Box, Text, Button } from 'gestalt';
 import ReactModal from 'react-modal';
 import { isEmpty } from 'lodash';
-import { Heading } from 'gestalt';
-import { TabViewContainer, ContentStyle, Table, H2 } from '../StyledComps';
+import { Heading, Icon } from 'gestalt';
+import {
+  TabViewContainer,
+  ContentStyle,
+  Table,
+  H2,
+  RightIcon,
+} from '../StyledComps';
 
 const cwb = 'https://www.cwb.gov.tw/V8/C/';
 const eocdss = 'http://eocdss.ncdr.nat.gov.tw/';
@@ -115,7 +121,7 @@ const Announcement = ({ text }) => {
 };
 
 const RiverTabView = (props) => {
-  const { keyName, config, displayOrder } = props;
+  const { keyName, config, displayOrder, onClickCancel } = props;
   const {
     name,
     history,
@@ -174,7 +180,7 @@ const RiverTabView = (props) => {
     }
 
     return [announcement, warningRivers, safetyCondition, deathRecords].filter(
-      (v) => v,
+      (v) => v
     );
   }, [name]);
 
@@ -188,6 +194,9 @@ const RiverTabView = (props) => {
     <TabViewContainer {...props}>
       <Heading color="darkGray" size="md" align="center">
         {keyName}
+        <RightIcon onClick={onClickCancel}>
+          <Icon icon="cancel" color="darkGray" />
+        </RightIcon>
       </Heading>
       <SegmentedControl
         selectedItemIndex={selectedItemIndex}

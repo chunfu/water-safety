@@ -146,6 +146,11 @@ const MapView = (props) => {
 
   // make center of map exactly the same as selected county
   const onSelectCountySideEffect = (countyKey) => {
+    if (!countyKey) {
+      updateMapProps(MAP_INIT_PROPS);
+      return;
+    }
+
     const { geojson } = countyConfig[countyKey];
     const gj = Leaflet.geoJSON(geojson);
     updateMapProps({
@@ -176,6 +181,14 @@ const MapView = (props) => {
     });
   };
 
+  const onCancelCounty = () => {
+    onSelectCounty('');
+  }
+
+  const onCancelRiver = () => {
+    onSelectRiver('');
+  }
+
   return (
     <>
       <ExcelUploader onDrop={onDrop} />
@@ -195,6 +208,7 @@ const MapView = (props) => {
             config={countyConfig[selectedCounty]}
             rivers={getCountyRiverConfig(selectedCounty, riverConfig)}
             keyName={selectedCounty}
+            onClickCancel={onCancelCounty}
           />
         </Draggable>
       )}
@@ -214,6 +228,7 @@ const MapView = (props) => {
           <RiverTabView
             config={riverConfig[selectedRiver]}
             keyName={selectedRiver}
+            onClickCancel={onCancelRiver}
           />
         </Draggable>
       )}

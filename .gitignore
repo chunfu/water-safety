@@ -4,3 +4,4 @@ build/
 ~*
 *.pyc
 *.log
+.DS_Store

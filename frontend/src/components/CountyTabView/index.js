@@ -1,8 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { SegmentedControl } from 'gestalt';
 import { isEmpty, groupBy, uniqBy } from 'lodash';
-import { Heading } from 'gestalt';
-import { TabViewContainer, ContentStyle, Table } from '../StyledComps';
+import { Heading, Icon } from 'gestalt';
+import {
+  TabViewContainer,
+  ContentStyle,
+  Table,
+  RightIcon,
+} from '../StyledComps';
 import {
   eventAm,
   eventLocation,
@@ -98,7 +103,7 @@ const DangerRiverTable = ({ data }) => {
 };
 
 const CountyTabView = (props) => {
-  const { keyName, config, rivers } = props;
+  const { keyName, config, rivers, onClickCancel } = props;
 
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   useEffect(() => {
@@ -109,7 +114,7 @@ const CountyTabView = (props) => {
   const { accidentData = [] } = config;
   const uniqAccidentData = uniqBy(
     accidentData,
-    (d) => `${d[eventYear]}${d[eventMonth]}${d[eventAm]}${d[eventTime]}`,
+    (d) => `${d[eventYear]}${d[eventMonth]}${d[eventAm]}${d[eventTime]}`
   );
   const yearlyAccidents = groupBy(uniqAccidentData, eventYear);
   const dangerRivers = groupBy(uniqAccidentData, eventLocation);
@@ -130,7 +135,7 @@ const CountyTabView = (props) => {
         content: <YearlyAccidentsTable data={yearlyAccidents} />,
       },
     ],
-    [yearlyAccidents, dangerRivers],
+    [yearlyAccidents, dangerRivers]
   );
 
   const names = items.map((i) => i.name);
@@ -143,6 +148,9 @@ const CountyTabView = (props) => {
     <TabViewContainer {...props}>
       <Heading color="darkGray" size="md" align="center">
         {keyName}
+        <RightIcon onClick={onClickCancel}>
+          <Icon icon="cancel" color="darkGray" />
+        </RightIcon>
       </Heading>
       <SegmentedControl
         selectedItemIndex={selectedItemIndex}
