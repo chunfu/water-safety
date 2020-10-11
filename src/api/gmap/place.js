@@ -150,7 +150,7 @@ const getPurpleRedPlaces = (sheetsData, placeObj) => {
   return newPlaceObj;
 };
 
-const genPlaceLatLng = async (req, res) => {
+const genLatLng = async () => {
   // read excel to json
   const sheetsData = excel2json(futil.DROWN_PATH);
   const prSheetsData = excel2json(futil.PURPLE_RED_PATH);
@@ -219,11 +219,20 @@ const genPlaceLatLng = async (req, res) => {
   const sheet = xlsx.utils.json_to_sheet(locationsWithLatLng);
   xlsx.utils.book_append_sheet(wb, sheet, 'warning_rivers');
   xlsx.writeFile(wb, futil.WARNING_RIVERS_PATH);
+};
 
-  res.json({
-    length: locationsWithLatLng.length,
-    file: futil.WARNING_RIVERS_PATH,
-  });
+const uploadPurpleRed = async (req, res) => {
+  const { files } = req;
+  try {
+    Object.values(files).forEach((f) =>
+      f.mv(futil.fullPath(f.name), () => {})
+      // f.mv(futil.fullPath(f.name), genLatLng)
+    );
+    res.json({ ok: 1 });
+  } catch (e) {
+    console.log(e.stack);
+    res.status(500).json({ errMsg: e.message });
+  }
 };
 
 const getPlaceLatLng = (req, res) => {
@@ -309,4 +318,26 @@ const getCountyData = (req, res) => {
   res.json(countyConfig);
 };
 
-export { genPlaceLatLng, getPlaceLatLng, uploadCountyData, getCountyData };
+const getFilesInfo = (req, res) => {
+  const drownFile = fs.statSync(futil.DROWN_PATH);
+  const purpleRedFile = fs.statSync(futil.PURPLE_RED_PATH);
+  res.json({ drownFile, purpleRedFile });
+};
+
+const fileMapping = {
+  drown: futil.DROWN_PATH,
+  purpleRed: futil.PURPLE_RED_PATH,
+};
+const downloadFile = (req, res) => {
+  const filePath = fileMapping[req.params.fileName];
+  res.download(filePath);
+};
+
+export {
+  uploadPurpleRed,
+  getPlaceLatLng,
+  uploadCountyData,
+  getCountyData,
+  getFilesInfo,
+  downloadFile,
+};

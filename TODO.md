@@ -19,3 +19,5 @@ TODO
 
 20201001
 1. "屏東縣荖濃溪沿岸"(紫色點)位在高雄市 -> data error, there are 2 points with the same position but no relationship
+1. when select river, try to select county
+1. authentication flow

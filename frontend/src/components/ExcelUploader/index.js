@@ -10,13 +10,9 @@ const getColor = props => {
 };
 
 const Container = styled.div`
-  position: absolute;
-  z-index: 401;
-  right: 5vw;
-  bottom: 5vh;
   background: #cfcfcf;
   padding: 10px;
-  width: 200px;
+  width: 100%;
   text-align: center;
   border-width: 2px;
   border-radius: 2px;
@@ -29,7 +25,7 @@ const Container = styled.div`
   cursor: pointer;
 `;
 
-const ExcelUploader = ({ onDrop }) => {
+const ExcelUploader = ({ onDrop, title }) => {
   const {
     getRootProps,
     getInputProps,
@@ -41,7 +37,7 @@ const ExcelUploader = ({ onDrop }) => {
   return (
     <Container {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
       <input {...getInputProps()} />
-      <h3>拖拉上傳歷年資料</h3>
+      <h3>{title}</h3>
     </Container>
   );
 };

@@ -5,13 +5,13 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
-import axios from 'axios';
-import { Map, TileLayer, Popup } from 'react-leaflet';
+import { Map, TileLayer } from 'react-leaflet';
 import Leaflet from 'leaflet';
 import { GeoJSONFillable } from 'react-leaflet-geojson-patterns';
 import { SelectList } from 'gestalt';
 import Draggable from 'react-draggable';
-import ExcelUploader from '../ExcelUploader';
+import LoginButton from '../LoginButton';
+import UploadButton from '../UploadButton';
 import CountyTabView from '../CountyTabView';
 import RiverTabView from '../RiverTabView';
 import { SelectListContainer, Tooltip } from '../StyledComps';
@@ -19,21 +19,6 @@ import { RiverPoints, CountyRiverList } from '../RiverComps';
 import { getCountyConfig, countyKeys } from './countyConfig';
 import { getRiverConfig } from './riverConfig';
 import { IndexContext } from '../../App';
-import {
-  eventCounty,
-  eventAm,
-  eventTime,
-  eventLocation,
-  eventYear,
-  eventMonth,
-} from '../../const';
-
-const file2form = (name) => (file) => {
-  let formData = new FormData();
-  formData.append(name, file, `${name}.xlsx`);
-
-  return formData;
-};
 
 const countySelectOptions = [{ value: '', label: '選擇縣市' }].concat(
   countyKeys.map((key) => ({
@@ -174,12 +159,6 @@ const MapView = (props) => {
       value: riverKey,
     });
   };
-  const onDrop = (acceptedFiles) => {
-    acceptedFiles.forEach(async (file) => {
-      const formData = file2form('drown_events')(file);
-      await axios.post('/api/county', formData);
-    });
-  };
 
   const onCancelCounty = () => {
     onSelectCounty('');
@@ -191,7 +170,8 @@ const MapView = (props) => {
 
   return (
     <>
-      <ExcelUploader onDrop={onDrop} />
+      <LoginButton />
+      <UploadButton />
       <SelectListContainer>
         <SelectList
           options={countySelectOptions}
@@ -259,7 +239,7 @@ const MapView = (props) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         /> */}
           {countyKeys.map((key) => {
-            const { geojson, style = geoJsonStyle } = countyConfig[key];
+            const { geojson, style = geoJsonStyle } = countyConfig[key] || {};
             return (
               geojson && (
                 <GeoJSONFillable
