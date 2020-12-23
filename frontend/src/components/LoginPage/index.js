@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Box, Heading, Button, TextField } from 'gestalt';
 import userManagement from '../../utils/userManagement';
@@ -8,18 +8,27 @@ const defaultLocationState = { from: { pathname: '/' } };
 const LoginPage = () => {
   let history = useHistory();
   let location = useLocation();
+  const [formValues, setFormValues] = useState({});
 
   const { from } = location.state || defaultLocationState;
 
-  const login = () => {
-    userManagement.authenticate(() => {
+  const login = async () => {
+    const isAllowed = await userManagement.authenticate(formValues);
+    if (isAllowed) {
       history.replace(from);
-    });
+    } else {
+      alert('帳號或密碼輸入錯誤');
+    }
   };
 
   const cancel = () => {
     history.replace(defaultLocationState.from);
   };
+
+  const onChangeAccount = ({ value }) =>
+    setFormValues({ ...formValues, account: value });
+  const onChangePassword = ({ value }) =>
+    setFormValues({ ...formValues, password: value });
 
   return (
     <Box
@@ -41,11 +50,15 @@ const LoginPage = () => {
       </Box>
 
       <Box flex="grow" paddingX={3} paddingY={3}>
-        <TextField label="帳號" onChange={() => {}} placeholder="帳號" />
+        <TextField label="帳號" onChange={onChangeAccount} placeholder="帳號" />
       </Box>
 
       <Box flex="grow" paddingX={3} paddingY={3}>
-        <TextField label="密碼" onChange={() => {}} placeholder="密碼" />
+        <TextField
+          label="密碼"
+          onChange={onChangePassword}
+          placeholder="密碼"
+        />
       </Box>
 
       <Box flex="grow" paddingX={3} paddingY={3}>
