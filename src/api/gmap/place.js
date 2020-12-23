@@ -224,10 +224,21 @@ const genLatLng = async () => {
 const uploadPurpleRed = async (req, res) => {
   const { files } = req;
   try {
-    Object.values(files).forEach((f) =>
-      f.mv(futil.fullPath(f.name), () => {})
+    Object.values(files).forEach(
+      (f) => f.mv(futil.fullPath(f.name), () => {})
       // f.mv(futil.fullPath(f.name), genLatLng)
     );
+    res.json({ ok: 1 });
+  } catch (e) {
+    console.log(e.stack);
+    res.status(500).json({ errMsg: e.message });
+  }
+};
+
+const uploadCountyPurple = async (req, res) => {
+  const { files } = req;
+  try {
+    Object.values(files).forEach((f) => f.mv(futil.fullPath(f.name), () => {}));
     res.json({ ok: 1 });
   } catch (e) {
     console.log(e.stack);
@@ -321,12 +332,15 @@ const getCountyData = (req, res) => {
 const getFilesInfo = (req, res) => {
   const drownFile = fs.statSync(futil.DROWN_PATH);
   const purpleRedFile = fs.statSync(futil.PURPLE_RED_PATH);
-  res.json({ drownFile, purpleRedFile });
+  const countyPurpleFile = fs.statSync(futil.fullPath('newtaipei.xlsx'));
+
+  res.json({ drownFile, purpleRedFile, countyPurpleFile });
 };
 
 const fileMapping = {
   drown: futil.DROWN_PATH,
   purpleRed: futil.PURPLE_RED_PATH,
+  countyPurple: futil.fullPath('newtaipei.xlsx'),
 };
 const downloadFile = (req, res) => {
   const filePath = fileMapping[req.params.fileName];
@@ -335,6 +349,7 @@ const downloadFile = (req, res) => {
 
 export {
   uploadPurpleRed,
+  uploadCountyPurple,
   getPlaceLatLng,
   uploadCountyData,
   getCountyData,

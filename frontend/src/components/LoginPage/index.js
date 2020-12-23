@@ -18,8 +18,8 @@ const LoginPage = () => {
   };
 
   const cancel = () => {
-      history.replace(defaultLocationState.from);
-  }
+    history.replace(defaultLocationState.from);
+  };
 
   return (
     <Box
@@ -41,19 +41,11 @@ const LoginPage = () => {
       </Box>
 
       <Box flex="grow" paddingX={3} paddingY={3}>
-        <TextField
-          label="帳號"
-          onChange={() => {}}
-          placeholder="帳號"
-        />
+        <TextField label="帳號" onChange={() => {}} placeholder="帳號" />
       </Box>
 
       <Box flex="grow" paddingX={3} paddingY={3}>
-        <TextField
-          label="密碼"
-          onChange={() => {}}
-          placeholder="密碼"
-        />
+        <TextField label="密碼" onChange={() => {}} placeholder="密碼" />
       </Box>
 
       <Box flex="grow" paddingX={3} paddingY={3}>
@@ -70,7 +62,13 @@ const LoginPage = () => {
             <Button text="取消" size="lg" inline onClick={cancel} />
           </Box>
           <Box paddingX={1} paddingY={1}>
-            <Button text="送出" color="red" size="lg" type="submit" onClick={login} />
+            <Button
+              text="送出"
+              color="red"
+              size="lg"
+              type="submit"
+              onClick={login}
+            />
           </Box>
         </Box>
       </Box>

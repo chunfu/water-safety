@@ -6,6 +6,7 @@ import {
   getPlaceLatLng,
   getCountyData,
   uploadCountyData,
+  uploadCountyPurple,
   getFilesInfo,
   downloadFile,
 } from './gmap/place';
@@ -26,6 +27,7 @@ export default ({ config, db }) => {
   api.get('/places', getPlaceLatLng);
   api.get('/county', getCountyData);
   api.post('/county', uploadCountyData);
+  api.post('/county/:name', uploadCountyPurple);
   api.get('/vars', getVariables);
   api.get('/files', getFilesInfo);
   api.get('/file/:fileName', downloadFile);

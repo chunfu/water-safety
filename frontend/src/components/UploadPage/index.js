@@ -60,7 +60,19 @@ const UploadPage = () => {
     });
   };
 
-  const { drownFile, purpleRedFile } = filesInfo;
+  const onDropCountyPurple = (acceptedFiles) => {
+    acceptedFiles.forEach(async (file) => {
+      try {
+        const formData = file2form('newtaipei')(file);
+        await axios.post('/api/county/newtaipei', formData);
+        alert('上傳成功');
+      } catch (e) {
+        alert('上傳失敗');
+      }
+    });
+  };
+
+  const { drownFile, purpleRedFile, countyPurpleFile } = filesInfo;
   return (
     <>
       <Box margin={2}>
@@ -94,7 +106,7 @@ const UploadPage = () => {
           )}
           <ExcelUploader title="拖拉或點擊上傳檔案" onDrop={onDropDrown} />
         </Box>
-        <Box flex="grow" paddingX={3} paddingY={3}>
+        {/* <Box flex="grow" paddingX={3} paddingY={3}>
           <Heading size="sm" accessibilityLevel={2}>
             紫色紅色總表
           </Heading>
@@ -110,6 +122,24 @@ const UploadPage = () => {
             </>
           )}
           <ExcelUploader title="拖拉或點擊上傳檔案" onDrop={onDropPurpleRed} />
+        </Box>
+      </Box> */}
+        <Box flex="grow" paddingX={3} paddingY={3}>
+          <Heading size="sm" accessibilityLevel={2}>
+            縣市紫點
+          </Heading>
+          {countyPurpleFile && (
+            <>
+              <Label>
+                <a href="/api/file/countyPurple">下載</a>
+                <Text>檔案大小 {formatBytes(countyPurpleFile.size)}</Text>
+                <Text>
+                  上傳時間 {new Date(countyPurpleFile.ctime).toLocaleString()}
+                </Text>
+              </Label>
+            </>
+          )}
+          <ExcelUploader title="拖拉或點擊上傳檔案" onDrop={onDropCountyPurple} />
         </Box>
       </Box>
     </>
