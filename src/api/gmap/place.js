@@ -22,14 +22,14 @@ import { groupBy, uniq, get } from 'lodash';
 
 const gmap = new Client();
 
-const excel2json = (path) => {
+const excel2json = (path, opts = { raw: false }) => {
   const workbook = xlsx.readFile(path);
   const sheets = workbook.SheetNames;
   const sheetsData = sheets.reduce((acc, sheet) => {
     const ws = workbook.Sheets[sheet];
     return {
       ...acc,
-      [sheet]: xlsx.utils.sheet_to_json(ws, { raw: false }),
+      [sheet]: xlsx.utils.sheet_to_json(ws, opts),
     };
   }, {});
 
