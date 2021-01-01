@@ -1,6 +1,5 @@
 import { version } from '../../package.json';
 import { Router } from 'express';
-import { upload } from './upload';
 import {
   uploadPurpleRed,
   getPlaceLatLng,
@@ -22,7 +21,6 @@ export default ({ config, db }) => {
   // mount the facets resource
   // api.use('/facets', facets({ config, db }));
 
-  api.post('/car/upload', upload);
   api.post('/purpleRed', uploadPurpleRed);
   api.get('/places', getPlaceLatLng);
   api.get('/county', getCountyData);
