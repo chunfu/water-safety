@@ -45,8 +45,11 @@
     "express": "^4.13.3",
     "express-fileupload": "^1.1.6-alpha.5",
     "find-root": "^1.1.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "morgan": "^1.8.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
     "resource-router-middleware": "^0.6.0",
     "xlsx": "^0.15.1"
   },

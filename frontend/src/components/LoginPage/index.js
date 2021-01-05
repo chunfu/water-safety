@@ -13,10 +13,10 @@ const LoginPage = () => {
   const { from } = location.state || defaultLocationState;
 
   const login = async () => {
-    const isAllowed = await userManagement.authenticate(formValues);
-    if (isAllowed) {
+    try {
+      await userManagement.authenticate(formValues);
       history.replace(from);
-    } else {
+    } catch (e) {
       alert('帳號或密碼輸入錯誤');
     }
   };
@@ -26,7 +26,7 @@ const LoginPage = () => {
   };
 
   const onChangeAccount = ({ value }) =>
-    setFormValues({ ...formValues, account: value });
+    setFormValues({ ...formValues, username: value });
   const onChangePassword = ({ value }) =>
     setFormValues({ ...formValues, password: value });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation, Link } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { Box, Heading, Button, TextField, Label, Text } from 'gestalt';
 import axios from 'axios';
 import ExcelUploader from '../ExcelUploader';
@@ -25,6 +25,7 @@ const file2form = (name) => (file) => {
 };
 
 const UploadPage = () => {
+  let history = useHistory();
   const [filesInfo, setFilesInfo] = useState({});
 
   useEffect(() => {
@@ -72,11 +73,22 @@ const UploadPage = () => {
     });
   };
 
+  const onClickLogout = () => {
+    userManagement.signout(history.replace({ pathname: '/' }));
+  };
+
   const { drownFile, purpleRedFile, countyPurpleFile } = filesInfo;
   return (
     <>
       <Box margin={2}>
-        <Link to="/">回首頁</Link>
+        <Box justifyContent="between" display="flex" margin={2}>
+          <Box>
+            <Link to="/">回首頁</Link>
+          </Box>
+          <Box>
+            <a href="javascript:void" onClick={onClickLogout} >登出</a>
+          </Box>
+        </Box>
       </Box>
       <Box
         display="flex"
@@ -123,7 +135,7 @@ const UploadPage = () => {
           )}
           <ExcelUploader title="拖拉或點擊上傳檔案" onDrop={onDropPurpleRed} />
         </Box>
-      </Box> */}
+        </Box> */}
         <Box flex="grow" paddingX={3} paddingY={3}>
           <Heading size="sm" accessibilityLevel={2}>
             縣市紫點
@@ -139,7 +151,10 @@ const UploadPage = () => {
               </Label>
             </>
           )}
-          <ExcelUploader title="拖拉或點擊上傳檔案" onDrop={onDropCountyPurple} />
+          <ExcelUploader
+            title="拖拉或點擊上傳檔案"
+            onDrop={onDropCountyPurple}
+          />
         </Box>
       </Box>
     </>

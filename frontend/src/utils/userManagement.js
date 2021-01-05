@@ -1,14 +1,22 @@
+import axios from 'axios';
+
+axios.interceptors.request.use(function (config) {
+  const token = localStorage.getItem('token');
+  config.headers.Authorization = `Bearer ${token}`;
+
+  return config;
+});
+
 const fakeAuth = {
-  isAuthenticated: false,
-  async authenticate({ account, password }) {
-    if (account === 'newtaipei' && password === 'newtaipei') {
-      fakeAuth.isAuthenticated = true;
-    }
-    return fakeAuth.isAuthenticated;
+  isAuthenticated: () => !!localStorage.getItem('token'),
+  async authenticate(cred) {
+    const { data } = await axios.post('/api/login', cred);
+    localStorage.setItem('token', data.token);
   },
-  signout(cb) {
-    fakeAuth.isAuthenticated = false;
-    setTimeout(cb, 100);
+  async signout(cb = () => null) {
+    localStorage.removeItem('token');
+    cb();
+    return fakeAuth.isAuthenticated();
   },
 };
 

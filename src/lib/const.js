@@ -14,10 +14,12 @@ const prRedCol = '禁止公告(紅點)';
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 const THUNDERFOREST_APIKEY = process.env.THUNDERFOREST_APIKEY;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export {
   API_KEY,
   THUNDERFOREST_APIKEY,
+  JWT_SECRET,
 
   eventCounty,
   eventLocation,

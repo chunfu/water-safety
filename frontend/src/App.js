@@ -23,7 +23,7 @@ const PrivateRoute = ({ children, ...rest }) => {
     <Route
       {...rest}
       render={({ location }) =>
-        userManagement.isAuthenticated ? (
+        userManagement.isAuthenticated() ? (
           children
         ) : (
           <Redirect
