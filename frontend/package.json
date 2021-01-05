@@ -6,7 +6,7 @@
     "axios": "^0.19.2",
     "gestalt": "^1.29.0",
     "leaflet": "^1.6.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-draggable": "^4.2.0",
